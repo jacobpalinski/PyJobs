@@ -1,0 +1,14 @@
+{
+  "name": "pyscript",
+  "version": "1.0.0",
+  "description": "python + javascript backend jobs board",
+  "scripts": {
+    "start": "node main.js",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^29.5.0"
+  }
+}
