@@ -1,5 +1,5 @@
-function sumNum (a: number, b: number): number {
-    return a+b;
-}
+import * as cheerio from 'cheerio';
 
-export {sumNum}
+class linkedinScraper {
+    
+}
