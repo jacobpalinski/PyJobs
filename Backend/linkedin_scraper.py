@@ -148,6 +148,10 @@ class LinkedinScraper():
             for provider in LinkedinScraper.cloud_providers:
                 if provider in description:
                     cloud_providers.append(provider)
+            if 'Amazon Web Services' in cloud_providers and 'AWS' in cloud_providers:
+                cloud_providers.remove('Amazon Web Services')
+            if 'Google Cloud' in cloud_providers and 'GCP' in cloud_providers:
+                cloud_providers.remove('Google Cloud')
         except:
             cloud_providers = None
         # Extract link

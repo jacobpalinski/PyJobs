@@ -52,7 +52,211 @@ def test_extract_job_ids(soup_object_results):
     assert len(linkedin_scraper.job_ids) == len(set(linkedin_scraper.job_ids))
     assert len(linkedin_scraper.job_ids) == 24
 
+def test_extract_job_data_data_engineer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_data_developer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_head_of_data_science(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_data_analyst(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_machine_learning_scientist(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_machine_learning_engineer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_etl_developer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_software_engineering_manager(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_quality_assurance_engineer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
 def test_extract_job_data_software_engineer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_frontend_developer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_quantitative_developer(soup_object_job_details_software_engineer):
+    linkedin_scraper = LinkedinScraper()
+    linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
+    print(linkedin_scraper.job_data)
+    assert len(linkedin_scraper.job_data[0]) == 11
+    assert linkedin_scraper.job_data[0]['Job_Id'] == 3436011836
+    assert linkedin_scraper.job_data[0]['Company'] == 'Macquarie Group'
+    assert linkedin_scraper.job_data[0]['Location'] == 'Sydney'
+    assert linkedin_scraper.job_data[0]['Industry'] == 'Banking, Financial Services, and Investment Banking'
+    assert linkedin_scraper.job_data[0]['Job Title'] == 'Software Engineer'
+    assert linkedin_scraper.job_data[0]['Group'] == 'Software Engineering / Development'
+    assert linkedin_scraper.job_data[0]['Programming Languages'] == ['Python']
+    assert linkedin_scraper.job_data[0]['Databases'] == []
+    assert linkedin_scraper.job_data[0]['Cloud Providers'] == ['AWS']
+    assert linkedin_scraper.job_data[0]['Link'] == 'https://au.linkedin.com/jobs/view/software-engineer-at-macquarie-group-3436011836?trk=public_jobs_topcard-title'
+    assert linkedin_scraper.job_data[0]['Date Posted'] == datetime.date.today()
+
+def test_extract_job_data_trader(soup_object_job_details_software_engineer):
     linkedin_scraper = LinkedinScraper()
     linkedin_scraper.extract_job_data('3436011836',soup_object_job_details_software_engineer)
     print(linkedin_scraper.job_data)
