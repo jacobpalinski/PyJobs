@@ -4,85 +4,78 @@ import math
 import regex as re
 import datetime
 
-class LinkedinScraper():
+class GenerateUrl():
+    def __init__(self):
+        self.url = None
+
+    def generate_listings_url(self,city: str, start_num: int) -> str:
+        self.url = f'https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}'
+
+    def generate_job_details_url(self,job_id: str) -> str:
+        self.url = f'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}'
+
+class HTMLRetriever():
+    def __init__(self):
+        self.html = None
+    
+    def get_html(self,url: str):
+        try:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            self.html = soup
+        except Exception as e:
+            print("Error occurred: ", e)
+
+class Scraper():
     # Programming languages, databases and cloud providers to search for when parsing html
     programming_languages = ["Python","JavaScript","TypeScript"]
     databases = ["MySQL","PostgreSQL","SQLite","MongoDB","Microsoft SQL Server",
     "MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
     cloud_providers = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]
-    location = ["Sydney"] # Other locations to be added later when AWS code works
+    locations = ["Sydney"] # Other locations to be added later when AWS code works
 
     def __init__(self):
+        self.html_retriever = HTMLRetriever()
+        self.generate_url = GenerateUrl()
         self.job_ids= []
         self.job_data= []
     
-    @staticmethod
-    def generate_listings_url(city: str, start_num: int) -> str:
-        url = f'https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}'
-        return url
-
-    @staticmethod
-    def generate_job_details_url(job_id: str) -> str:
-        url = f'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}'
-        return url
-
-    @staticmethod
-    def get_html(url: str):
-        try:
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return soup
-        except Exception as e:
-            print("Error occurred: ", e)
-    
-    def extract_job_ids(self,soup: BeautifulSoup):
+    def extract_job_ids(self,html: BeautifulSoup):
         # Check if there are job listings for given url
-        title = soup.title.text
+        title = html.title.text
         match = re.search(r'\d+',title)
         if match:
             # Extract job id for each listing
-            job_divs = soup.find_all('div', class_ = 'base-card relative w-full hover:no-underline focus:no-underline base-card--link base-search-card base-search-card--link job-search-card')
+            job_divs = html.find_all('div', class_ = 'base-card relative w-full hover:no-underline focus:no-underline base-card--link base-search-card base-search-card--link job-search-card')
             for job in job_divs:
                 job_id = job.get('data-entity-urn').split(':')[3]
                 self.job_ids.append(job_id)
         else:
             return ('No jobs were posted')
     
-    def extract_job_data(self, job_id: str, soup: BeautifulSoup):
-        ''' To include in job_data {} object (in specified order):
-            - Job ID
-            - Company
-            - Location
-            - Industry
-            - Job Title
-            - Group (Data Science / Engineering, Software Engineering, Quantitative Finance / Trading, Research, Testing, Management)
-            - Programming languages
-            - Databases
-            - Cloud Providers
-            - Link
-            - Date Posted'''
+    def extract_job_data(self, job_id: str, html: BeautifulSoup):
         # Job id
         id = int(job_id)
         # Extract company
         try:
-            company = soup.find('div', class_ = 'topcard__flavor-row').find('a').text.strip()
+            company = html.find('div', class_ = 'topcard__flavor-row').find('a').text.strip()
         except:
             company = None
         # Extract location
         try:
-            location = soup.find('div', class_ = 'topcard__flavor-row')\
+            location = html.find('div', class_ = 'topcard__flavor-row')\
             .find('span', class_ = 'topcard__flavor topcard__flavor--bullet').text.strip().split(',')[0]
         except:
             location = None
         # Extract industry
         try:
-            industry = soup.find('ul', class_ = 'description__job-criteria-list').find_all('li')[3]\
+            industry = html.find('ul', class_ = 'description__job-criteria-list').find_all('li')[3]\
             .text.replace('Industries', '').strip()
         except:
             industry = None
         # Extract job title
         try:
-            job_title = soup.find('div', class_ = 'top-card-layout__entity-info').find('a').text.strip()
+            job_title = html.find('div', class_ = 'top-card-layout__entity-info').find('a').text.strip()
         except:
             job_title = None
         # Extract group
@@ -125,27 +118,27 @@ class LinkedinScraper():
             group = None
         # Extract programming languages
         try:
-            description = soup.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
+            description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             programming_languages = []
-            for language in LinkedinScraper.programming_languages:
+            for language in Scraper.programming_languages:
                 if language in description:
                     programming_languages.append(language)
         except:
             programming_languages = None
         # Extract databases
         try:
-            description = soup.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
+            description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             databases = []
-            for database in LinkedinScraper.databases:
+            for database in Scraper.databases:
                 if database in description:
                     databases.append(database)
         except:
             databases = None
         # Extract cloud provider
         try:
-            description = soup.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
+            description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             cloud_providers = []
-            for provider in LinkedinScraper.cloud_providers:
+            for provider in Scraper.cloud_providers:
                 if provider in description:
                     cloud_providers.append(provider)
             if 'Amazon Web Services' in cloud_providers and 'AWS' in cloud_providers:
@@ -156,7 +149,7 @@ class LinkedinScraper():
             cloud_providers = None
         # Extract link
         try:
-            link = soup.find('a', class_ = 'topcard__link').get('href')
+            link = html.find('a', class_ = 'topcard__link').get('href')
         except:
             link = None
         # Date posted
@@ -164,10 +157,3 @@ class LinkedinScraper():
         # Append to list
         self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Industry': industry, 'Job Title': job_title, 'Group': group,
         'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
-
-
-
-        
-
-        
-
