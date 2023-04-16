@@ -4,6 +4,7 @@ from httpstatus import HttpStatus
 from models import jobData
 from linkedin_scraper import *
 import json
+import datetime
 
 job_data_blueprint = Blueprint('job_data',__name__)
 job_data = Api(job_data_blueprint)
@@ -13,13 +14,29 @@ class jobDataResource(Resource):
         ''' Retrieves jobs list based on request parameters specified in get request / filters on search page.
         Must be able to retrieve jobs based on parameters that take a list as a value eg. 'Programming Languages': ['Python','TypeScript']'''
         # Extract arguments from get request
-        location = request.args.get('location')
-        industry = request.args.get('industry')
-        group = request.args.get('group')
-        programming_languages = request.args.getlist('language')
-        databases = request.args.getlist('database')
-        cloud_providers = request.args.getlist('cloud')
-        
+        query_args = {}
+        for arg in request.args:
+            if arg == 'location':
+                query_args['location'] = request.args.get(arg)
+            elif arg == 'industry':
+                query_args['industry'] = request.args.get(arg)
+            elif arg == 'group':
+                query_args['group'] = request.args.get(arg)
+            elif arg == 'language':
+                query_args['programmingLanguages__in'] = list(request.args.getlist(arg))
+            elif arg == 'database':
+                query_args['databases__in'] = list(request.args.getlist(arg))
+            elif arg == 'cloud':
+                query_args['cloudProviders__in'] = list(request.args.getlist(arg))
+        # Query jobData. If date_order == ascending specified, return jobs in ascending order else descending
+        if request.args.get('date_order'):
+            if request.args.get('date_order') == 'ascending':
+                data = jobData.objects(**query_args).order_by('+datePosted')
+        else:
+            data = jobData.objects(**query_args).order_by('-datePosted')
+        # Convert QuerySet object to json and return output
+        json_data = data.to_json()
+        return jsonify(json.loads(json_data))
 
     def post(self):
         ''' Uses Lambda function to scrape data using linkedin_scraper.py script, checking for existing data in database,
@@ -67,5 +84,8 @@ class jobDataResource(Resource):
         ''' Updates jobData based on parameters specified in request.'''
     def delete(self):
         ''' Lambda function to delete jobData when job post becomes 14 days old'''
+        earliest_date = datetime.date.today() - datetime.timedelta(days = 14)
+        data = jobData.objects(datePosted__lte = earliest_date)
+        
 
 job_data.add_resource(jobDataResource, '/jobData/')
