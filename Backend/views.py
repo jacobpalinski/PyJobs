@@ -85,7 +85,14 @@ class jobDataResource(Resource):
     def delete(self):
         ''' Lambda function to delete jobData when job post becomes 14 days old'''
         earliest_date = datetime.date.today() - datetime.timedelta(days = 14)
-        data = jobData.objects(datePosted__lte = earliest_date)
-        
+        try:
+            data = jobData.objects(datePosted__lte = earliest_date)
+            data.delete()
+            return {'message': 'Old jobs deleted successfully'}, HttpStatus.no_content_204.value
+        except Exception as e:
+            response = {'message': e}
+            return response, HttpStatus.notfound_404.value
+
+
 
 job_data.add_resource(jobDataResource, '/jobData/')
