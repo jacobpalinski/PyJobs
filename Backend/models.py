@@ -1,5 +1,6 @@
 from flask_mongoengine import MongoEngine
 import datetime
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 db = MongoEngine()
 
@@ -18,3 +19,14 @@ class jobData(db.Document):
     datePosted = db.DateTimeField(default = datetime.date.today())
     
     meta = {'id_field': 'jobId'}
+
+class User(db.Document):
+    username = db.StringField(required = True, unique = True)
+    password = db.StringField(required = True)
+    admin = db.BooleanField(required = True)
+
+    def hash_password(self):
+        self.password = generate_password_hash(self.password).decode('utf-8')
+    
+    def check_password(self,password):
+        return check_password_hash(self.password, password)

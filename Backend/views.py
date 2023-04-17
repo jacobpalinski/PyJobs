@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 from flask_restful import Api, Resource
 from httpstatus import HttpStatus
-from models import jobData
+from models import jobData, User
 from linkedin_scraper import *
 import json
 import datetime
@@ -76,23 +76,80 @@ class jobDataResource(Resource):
                 new_job.validate()
                 new_job.save()
             except Exception as e:
-                response = {'message': e}
-                return response, HttpStatus.bad_request_400.value
+                return {'message': e}, HttpStatus.bad_request_400.value
         return {'message': 'New jobs added successfully'}, HttpStatus.created_201.value
 
-    def patch(self):
+    def patch(self, id):
         ''' Updates jobData based on parameters specified in request.'''
+        data = jobData.objects(jobId = id).first()
+        # Check if jobId exists
+        if not data:
+            return {'message': f"jobID {id} doesn't exist in database"}, HttpStatus.notfound_404.value
+        # Update fields in jobData
+        if 'company' in request.args:
+            data.company = request.args.get('company')
+        if 'location' in request.args:
+            data.location = request.args.get('location')
+        if 'industry' in request.args:
+            data.industry = request.args.get('industry')
+        if 'jobTitle' in request.args:
+            data.jobTitle = request.args.get('jobTitle')
+        if 'group' in request.args:
+            data.group = request.args.get('group')
+        if 'language' in request.args and 'language_index' in request.args:
+            index = int(request.args.get('language_index'))
+            language = request.args.get('language')
+            if index < len(data.programmingLanguages):
+                data.programmingLanguages[index] = language
+            elif index == len(data.programmingLanguages):
+                data.programmingLanguages.append(language)
+        if 'database' in request.args and 'database_index' in request.args:
+            index = int(request.args.get('database_index'))
+            database = request.args.get('database')
+            if index < len(data.databases):
+                data.databases[index] = database
+            elif index == len(data.databases):
+                data.databases.append(language)
+        if 'cloud' in request.args and 'cloud_index' in request.args:
+            index = int(request.args.get('cloud_index'))
+            cloud = request.args.get('cloud')
+            if index < len(data.cloudProviders):
+                data.cloudProviders[index] = cloud
+            elif index == len(data.cloudProviders):
+                data.cloudProviders.append(cloud)
+        # Save updates to document
+        data.save()
+        # Convert document to json and return updated output
+        json_data = data.to_json()
+        return jsonify(json.loads(json_data))
+
     def delete(self):
         ''' Lambda function to delete jobData when job post becomes 14 days old'''
+        # Job posts >= 14 days old will be deleted
         earliest_date = datetime.date.today() - datetime.timedelta(days = 14)
         try:
             data = jobData.objects(datePosted__lte = earliest_date)
             data.delete()
             return {'message': 'Old jobs deleted successfully'}, HttpStatus.no_content_204.value
         except Exception as e:
-            response = {'message': e}
-            return response, HttpStatus.notfound_404.value
+            return {'message': e}, HttpStatus.notfound_404.value
 
+class UserResource(Resource):
+    def post(self):
+        user_register_dict = request.get_json()
+        # Check if I have already created an admin user
+        is_admin = User.objects(admin = True).count()
+        if is_admin != 1:
+            try:
+                user = User(**user_register_dict) # user_register_dict should contain 'username','password' and 'admin' key value pairs
+                user.hash_password()
+                user.validate()
+                user.save()
+                return {'message': 'Admin user successfully registered'}, HttpStatus.created_201.value
+            except Exception as e:
+                return {'message': 'Error. Please try again'}, HttpStatus.unauthorized_401.value
+        else:
+            return {'message': 'Admin user already exists. If admin login'}, HttpStatus.conflict_409.value
 
-
-job_data.add_resource(jobDataResource, '/jobData/')
+job_data.add_resource(jobDataResource, '/jobData/','/jobData/<int:id>')
+job_data.add_resource(UserResource, '/User/')
