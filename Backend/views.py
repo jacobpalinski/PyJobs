@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 from flask_restful import Api, Resource
+from flask_httpauth import HTTPBasicAuth
 from httpstatus import HttpStatus
 from models import jobData, User
 from linkedin_scraper import *
@@ -8,6 +9,13 @@ import datetime
 
 job_data_blueprint = Blueprint('job_data',__name__)
 job_data = Api(job_data_blueprint)
+auth = HTTPBasicAuth()
+
+@auth.verify_password
+def verify_password(username,password):
+    user = User.objects(username = username).first()
+    if user and user.check_password(password):
+        return user
 
 class jobDataResource(Resource):
     def get(self):
@@ -38,9 +46,14 @@ class jobDataResource(Resource):
         json_data = data.to_json()
         return jsonify(json.loads(json_data))
 
+    @auth.login_required
     def post(self):
         ''' Uses Lambda function to scrape data using linkedin_scraper.py script, checking for existing data in database,
         removing duplicates from new data, and inserts new data into database'''
+        user = auth.current_user()
+        if not user.admin:
+            return {'message': 'You need admin privileges to add jobs'}, HttpStatus.forbidden_403.value
+        
         linkedin_scraper = Scraper()
         for location in Scraper.locations:
             # Retrieve total number of listings from initial loading page
@@ -79,8 +92,13 @@ class jobDataResource(Resource):
                 return {'message': e}, HttpStatus.bad_request_400.value
         return {'message': 'New jobs added successfully'}, HttpStatus.created_201.value
 
+    @auth.login_required
     def patch(self, id):
         ''' Updates jobData based on parameters specified in request.'''
+        user = auth.current_user()
+        if not user.admin:
+            return {'message': 'You need admin privileges to update jobs'}, HttpStatus.forbidden_403.value
+        
         data = jobData.objects(jobId = id).first()
         # Check if jobId exists
         if not data:
@@ -123,8 +141,12 @@ class jobDataResource(Resource):
         json_data = data.to_json()
         return jsonify(json.loads(json_data))
 
+    @auth.login_required
     def delete(self):
         ''' Lambda function to delete jobData when job post becomes 14 days old'''
+        user = auth.current_user()
+        if not user.admin:
+            return {'message': 'You need admin privileges to delete old jobs'}, HttpStatus.forbidden_403.value
         # Job posts >= 14 days old will be deleted
         earliest_date = datetime.date.today() - datetime.timedelta(days = 14)
         try:
