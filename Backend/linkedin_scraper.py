@@ -29,8 +29,8 @@ class HTMLRetriever():
 class Scraper():
     # Programming languages, databases and cloud providers to search for when parsing html
     programming_languages = ["Python","JavaScript","TypeScript"]
-    databases = ["MySQL","PostgreSQL","SQLite","MongoDB","Microsoft SQL Server",
-    "MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
+    databases = ["MySQL","PostgreSQL","SQLite","MongoDB","Microsoft SQL Server", "MS SQL",
+    "SQL Server","MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
     cloud_providers = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]
     locations = ["Sydney"] # Other locations to be added later when AWS code works
 
@@ -67,12 +67,6 @@ class Scraper():
             .find('span', class_ = 'topcard__flavor topcard__flavor--bullet').text.strip().split(',')[0]
         except:
             location = None
-        # Extract industry
-        try:
-            industry = html.find('ul', class_ = 'description__job-criteria-list').find_all('li')[3]\
-            .text.replace('Industries', '').strip()
-        except:
-            industry = None
         # Extract job title
         try:
             job_title = html.find('div', class_ = 'top-card-layout__entity-info').find('a').text.strip()
@@ -121,7 +115,7 @@ class Scraper():
             description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             programming_languages = []
             for language in Scraper.programming_languages:
-                if language in description:
+                if re.search(language, description, re.IGNORECASE):
                     programming_languages.append(language)
         except:
             programming_languages = None
@@ -130,7 +124,7 @@ class Scraper():
             description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             databases = []
             for database in Scraper.databases:
-                if database in description:
+                if re.search(database, description, re.IGNORECASE):
                     databases.append(database)
         except:
             databases = None
@@ -139,7 +133,7 @@ class Scraper():
             description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             cloud_providers = []
             for provider in Scraper.cloud_providers:
-                if provider in description:
+                if re.search(provider, description, re.IGNORECASE):
                     cloud_providers.append(provider)
             if 'Amazon Web Services' in cloud_providers and 'AWS' in cloud_providers:
                 cloud_providers.remove('Amazon Web Services')
@@ -155,5 +149,5 @@ class Scraper():
         # Date posted
         date_posted = datetime.date.today()
         # Append to list
-        self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Industry': industry, 'Job Title': job_title, 'Group': group,
+        self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
         'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})

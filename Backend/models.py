@@ -8,7 +8,6 @@ class jobData(db.Document):
     jobId = db.IntField(required = True, unique = True, primary_key = True)
     company = db.StringField(required = True)
     location = db.StringField(required = True)
-    industry = db.StringField(required = True)
     jobTitle = db.StringField(required = True)
     group = db.StringField(required = True)
     programmingLanguages = db.ListField(db.StringField(choices = ['Python','JavaScript','TypeScript']), required = True, max_length = 3)
