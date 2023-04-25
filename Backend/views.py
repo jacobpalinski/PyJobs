@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 from flask_restful import Api, Resource
 from flask_httpauth import HTTPBasicAuth
+from mongoengine.errors import ValidationError
 from httpstatus import HttpStatus
 from models import jobData, User
 from linkedin_scraper import *
@@ -25,11 +26,11 @@ class jobDataResource(Resource):
         query_args = {}
         for arg in request.args:
             if arg == 'location':
-                query_args['location'] = request.args.get(arg)
-            elif arg == 'industry':
-                query_args['industry'] = request.args.get(arg)
+                query_args['location__in'] = list(request.args.getlist(arg))
+            elif arg == 'company':
+                query_args['company__in'] = list(request.args.getlist(arg))
             elif arg == 'group':
-                query_args['group'] = request.args.get(arg)
+                query_args['group__in'] = list(request.args.getlist(arg))
             elif arg == 'language':
                 query_args['programmingLanguages__in'] = list(request.args.getlist(arg))
             elif arg == 'database':
@@ -42,13 +43,17 @@ class jobDataResource(Resource):
                 data = jobData.objects(**query_args).order_by('+datePosted')
         else:
             data = jobData.objects(**query_args).order_by('-datePosted')
-        # Convert QuerySet object to json and return output
-        json_data = data.to_json()
-        return jsonify(json.loads(json_data))
+        # Convert QuerySet object to json
+        json_data = json.loads(data.to_json())
+        # Convert unix timestamp into datetime.date string
+        for data in json_data:
+            data['datePosted'] = datetime.datetime.fromtimestamp(data['datePosted']['$date'] / 1000.0).date().strftime('%Y-%m-%d')
+        # Return output
+        return json_data
 
     @auth.login_required
     def post(self):
-        ''' Uses Lambda function to scrape data using linkedin_scraper.py script, checking for existing data in database,
+        ''' Uses AWS batch function to scrape data using linkedin_scraper.py script, checking for existing data in database,
         removing duplicates from new data, and inserts new data into database'''
         user = auth.current_user()
         if not user.admin:
@@ -57,39 +62,44 @@ class jobDataResource(Resource):
         linkedin_scraper = Scraper()
         for location in Scraper.locations:
             # Retrieve total number of listings from initial loading page
-            initial_url = linkedin_scraper.generate_url.generate_listings_url(location,0)
-            html = linkedin_scraper.html_retriever.get_html(initial_url)
+            initial_url = GenerateUrl.generate_listings_url(location,0)
+            html = HTMLRetriever.get_html(initial_url)
             title = html.title.text
-            num_listings = re.search(r'\d+',title)
+            num_listings = re.search(r'\d[\d,]*\d|\d',title)
 
             if num_listings:
-                num_loops = math.ceil(int(num_listings)/25)
+                num_listings_str = num_listings.group().replace(",","")
+                print(num_listings_str)
+                num_loops = math.ceil(int(num_listings_str)/25)
+                print(num_loops)
                 start_num = 0
                 # Extract job_id from all listings
-                for loop in range(0,num_loops):
-                    url = linkedin_scraper.generate_url.generate_listings_url(location,start_num)
-                    html = linkedin_scraper.html_retriever.get_html(url)
+                for loop in range(0,1): # put num loops back in later
+                    url = GenerateUrl.generate_listings_url(location,start_num)
+                    html = HTMLRetriever.get_html(url)
                     linkedin_scraper.extract_job_ids(html)
                     start_num += 25
                 # Extract relevant job details from each listing
                 for job_id in linkedin_scraper.job_ids:
-                    job_details_url = linkedin_scraper.generate_url.generate_job_details_url(job_id)
-                    job_details_html = linkedin_scraper.html_retriever.get_html(job_details_url)
+                    job_details_url = GenerateUrl.generate_job_details_url(job_id)
+                    job_details_html = HTMLRetriever.get_html(job_details_url)
                     linkedin_scraper.extract_job_data(job_id,job_details_html)
             
         # Check if job_id for job is in jobData database
         for job in linkedin_scraper.job_data:
-            if jobData.objects(jobId = job['Job_Id']):
+            queryset = jobData.objects(jobId = job['Job_Id'])
+            if len(queryset) != 0:
                 continue
             # Append new job to jobData database
             try:
-                new_job = jobData(jobID = job['Job_Id'], company = job['Company'], location = job['Location'], industry = job['Industry'], jobTitle = job['Job Title'],
+                new_job = jobData(jobId = job['Job_Id'], company = job['Company'], location = job['Location'], jobTitle = job['Job Title'],
                 group = job['Group'], programmingLanguages = job['Programming Languages'], databases = job['Databases'], cloudProviders = job['Cloud Providers'],
                 link = job['Link'], datePosted = job['Date Posted'])
+                print(new_job.to_mongo().to_dict())
                 new_job.validate()
                 new_job.save()
-            except Exception as e:
-                return {'message': e}, HttpStatus.bad_request_400.value
+            except ValidationError as e:
+                return {'message': str(e)}, HttpStatus.bad_request_400.value
         return {'message': 'New jobs added successfully'}, HttpStatus.created_201.value
 
     @auth.login_required
@@ -103,43 +113,50 @@ class jobDataResource(Resource):
         # Check if jobId exists
         if not data:
             return {'message': f"jobID {id} doesn't exist in database"}, HttpStatus.notfound_404.value
-        # Update fields in jobData
-        if 'company' in request.args:
-            data.company = request.args.get('company')
-        if 'location' in request.args:
-            data.location = request.args.get('location')
-        if 'industry' in request.args:
-            data.industry = request.args.get('industry')
-        if 'jobTitle' in request.args:
-            data.jobTitle = request.args.get('jobTitle')
-        if 'group' in request.args:
-            data.group = request.args.get('group')
-        if 'language' in request.args and 'language_index' in request.args:
-            index = int(request.args.get('language_index'))
-            language = request.args.get('language')
-            if index < len(data.programmingLanguages):
-                data.programmingLanguages[index] = language
-            elif index == len(data.programmingLanguages):
-                data.programmingLanguages.append(language)
-        if 'database' in request.args and 'database_index' in request.args:
-            index = int(request.args.get('database_index'))
-            database = request.args.get('database')
-            if index < len(data.databases):
-                data.databases[index] = database
-            elif index == len(data.databases):
-                data.databases.append(language)
-        if 'cloud' in request.args and 'cloud_index' in request.args:
-            index = int(request.args.get('cloud_index'))
-            cloud = request.args.get('cloud')
-            if index < len(data.cloudProviders):
-                data.cloudProviders[index] = cloud
-            elif index == len(data.cloudProviders):
-                data.cloudProviders.append(cloud)
-        # Save updates to document
-        data.save()
-        # Convert document to json and return updated output
-        json_data = data.to_json()
-        return jsonify(json.loads(json_data))
+        try:
+            # Update fields in jobData
+            if 'company' in request.args:
+                data.company = request.args.get('company')
+            if 'location' in request.args:
+                data.location = request.args.get('location')
+            if 'industry' in request.args:
+                data.industry = request.args.get('industry')
+            if 'jobTitle' in request.args:
+                data.jobTitle = request.args.get('jobTitle')
+            if 'group' in request.args:
+                data.group = request.args.get('group')
+            if 'language' in request.args and 'language_index' in request.args:
+                index = int(request.args.get('language_index'))
+                language = request.args.get('language')
+                if index < len(data.programmingLanguages):
+                    data.programmingLanguages[index] = language
+                elif index == len(data.programmingLanguages):
+                    data.programmingLanguages.append(language)
+            if 'database' in request.args and 'database_index' in request.args:
+                index = int(request.args.get('database_index'))
+                database = request.args.get('database')
+                if index < len(data.databases):
+                    data.databases[index] = database
+                elif index == len(data.databases):
+                    data.databases.append(language)
+            if 'cloud' in request.args and 'cloud_index' in request.args:
+                index = int(request.args.get('cloud_index'))
+                cloud = request.args.get('cloud')
+                if index < len(data.cloudProviders):
+                    data.cloudProviders[index] = cloud
+                elif index == len(data.cloudProviders):
+                    data.cloudProviders.append(cloud)
+            # Validate and save updates to document
+            data.validate()
+            data.save()
+        except ValidationError as e:
+            return {'message': str(e)}, HttpStatus.bad_request_400.value
+        # Convert document to json
+        json_data = json.loads(data.to_json())
+        # Convert unix timestamp into datetime.date string
+        json_data['datePosted'] = datetime.datetime.fromtimestamp(json_data['datePosted']['$date'] / 1000.0).date().strftime('%Y-%m-%d')
+        # Return updated output
+        return json_data
 
     @auth.login_required
     def delete(self):
@@ -152,7 +169,7 @@ class jobDataResource(Resource):
         try:
             data = jobData.objects(datePosted__lte = earliest_date)
             data.delete()
-            return {'message': 'Old jobs deleted successfully'}, HttpStatus.no_content_204.value
+            return {'message': 'Old jobs deleted successfully'}, HttpStatus.ok_200.value
         except Exception as e:
             return {'message': e}, HttpStatus.notfound_404.value
 
@@ -168,10 +185,10 @@ class UserResource(Resource):
                 user.validate()
                 user.save()
                 return {'message': 'Admin user successfully registered'}, HttpStatus.created_201.value
-            except Exception as e:
-                return {'message': 'Error. Please try again'}, HttpStatus.unauthorized_401.value
+            except ValidationError as e:
+                return {'message': e.errors}, HttpStatus.unauthorized_401.value
         else:
             return {'message': 'Admin user already exists. If admin login'}, HttpStatus.conflict_409.value
 
 job_data.add_resource(jobDataResource, '/jobData/','/jobData/<int:id>')
-job_data.add_resource(UserResource, '/User/')
+job_data.add_resource(UserResource, '/user/')

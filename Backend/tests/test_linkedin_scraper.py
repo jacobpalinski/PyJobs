@@ -103,98 +103,98 @@ def mock_html_job_details_quantitative_trader():
 
 @pytest.fixture
 def soup_object_results(html_retriever_instance,mock_html_results, requests_mock):
-    url = 'https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location=Sydney&f_TPR=r86400&position=1&pageNum=0&start=0'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location=Sydney&f_TPR=r86400&position=1&pageNum=0&start=0'
     requests_mock.get(url, text = mock_html_results)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_data_engineer(html_retriever_instance,mock_html_job_details_data_engineer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3556628474'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3556628474'
     requests_mock.get(url, text = mock_html_job_details_data_engineer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_data_developer(html_retriever_instance,mock_html_job_details_data_developer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3554271516'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3554271516'
     requests_mock.get(url, text = mock_html_job_details_data_developer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_senior_manager_customer_data_science(html_retriever_instance,mock_html_job_details_senior_manager_customer_data_science, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3571787190'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3571787190'
     requests_mock.get(url, text = mock_html_job_details_senior_manager_customer_data_science)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_data_analyst(html_retriever_instance,mock_html_job_details_data_analyst, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3514297385'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3514297385'
     requests_mock.get(url, text = mock_html_job_details_data_analyst)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_machine_learning_scientist(html_retriever_instance,mock_html_job_details_machine_learning_scientist, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3573992159'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3573992159'
     requests_mock.get(url, text = mock_html_job_details_machine_learning_scientist)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_machine_learning_engineer(html_retriever_instance,mock_html_job_details_machine_learning_engineer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3555733284'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3555733284'
     requests_mock.get(url, text = mock_html_job_details_machine_learning_engineer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_etl_developer(html_retriever_instance,mock_html_job_details_etl_developer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3569908450'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3569908450'
     requests_mock.get(url, text = mock_html_job_details_etl_developer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_engineering_manager_software(html_retriever_instance,mock_html_job_details_engineering_manager_software, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3568553070'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3568553070'
     requests_mock.get(url, text = mock_html_job_details_engineering_manager_software)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_junior_quality_assurance_engineer(html_retriever_instance,mock_html_job_details_junior_quality_assurance_engineer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3574765264'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3574765264'
     requests_mock.get(url, text = mock_html_job_details_junior_quality_assurance_engineer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_software_engineer(html_retriever_instance,mock_html_job_details_software_engineer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3436011836'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3436011836'
     requests_mock.get(url, text = mock_html_job_details_software_engineer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_frontend_developer(html_retriever_instance,mock_html_job_details_frontend_developer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3556440712'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3556440712'
     requests_mock.get(url, text = mock_html_job_details_frontend_developer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_quantitative_developer(html_retriever_instance,mock_html_job_details_quantitative_developer, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3570855585'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3570855585'
     requests_mock.get(url, text = mock_html_job_details_quantitative_developer)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
 
 @pytest.fixture
 def soup_object_job_details_quantitative_trader(html_retriever_instance,mock_html_job_details_quantitative_trader, requests_mock):
-    url = 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3567412548'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/3567412548'
     requests_mock.get(url, text = mock_html_job_details_quantitative_trader)
     html_retriever_instance.get_html(url)
     return html_retriever_instance.html
@@ -203,15 +203,15 @@ def test_generate_listings_url(generate_url_instance):
     city = 'Sydney'
     start_num = 0
     generate_url_instance.generate_listings_url(city,start_num)
-    assert generate_url_instance.url == 'https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location=Sydney&f_TPR=r86400&position=1&pageNum=0&start=0'
+    assert generate_url_instance.url == 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location=Sydney&f_TPR=r86400&position=1&pageNum=0&start=0&dynamic=false'
 
 def test_generate_job_details_url(generate_url_instance):
     job_id = '12345'
     generate_url_instance.generate_job_details_url(job_id)
-    assert generate_url_instance.url == 'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/12345'
+    assert generate_url_instance.url == 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs-guest/jobs/api/jobPosting/12345&dynamic=false'
 
 def test_get_html(html_retriever_instance,mock_html_results, requests_mock):
-    url = 'https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location=Sydney&f_TPR=r86400&position=1&pageNum=0&start=0'
+    url = 'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location=Sydney&f_TPR=r86400&position=1&pageNum=0&start=0&dynamic=false'
     requests_mock.get(url, text = mock_html_results)
     html_retriever_instance.get_html(url)
     assert html_retriever_instance.html != None

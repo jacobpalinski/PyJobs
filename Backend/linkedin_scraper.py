@@ -5,45 +5,40 @@ import regex as re
 import datetime
 
 class GenerateUrl():
-    def __init__(self):
-        self.url = None
+    @staticmethod
+    def generate_listings_url(city: str, start_num: int) -> str:
+        return f'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}&dynamic=false'
 
-    def generate_listings_url(self,city: str, start_num: int) -> str:
-        self.url = f'https://au.linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}'
-
-    def generate_job_details_url(self,job_id: str) -> str:
-        self.url = f'https://au.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}'
+    @staticmethod
+    def generate_job_details_url(job_id: str) -> str:
+        return f'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}&dynamic=false'
 
 class HTMLRetriever():
-    def __init__(self):
-        self.html = None
-    
-    def get_html(self,url: str):
+    @staticmethod
+    def get_html(url: str):
         try:
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
-            self.html = soup
+            return soup
         except Exception as e:
             print("Error occurred: ", e)
 
 class Scraper():
     # Programming languages, databases and cloud providers to search for when parsing html
     programming_languages = ["Python","JavaScript","TypeScript"]
-    databases = ["MySQL","PostgreSQL","SQLite","MongoDB","Microsoft SQL Server", "MS SQL",
+    databases = ["MySQL","PostgreSQL","SQLite","MongoDB", "MS SQL",
     "SQL Server","MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
     cloud_providers = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]
-    locations = ["Sydney"] # Other locations to be added later when AWS code works
+    locations = ["European%20Economic%20Area"] # Other locations to be added later when AWS code works
 
     def __init__(self):
-        self.html_retriever = HTMLRetriever()
-        self.generate_url = GenerateUrl()
         self.job_ids= []
         self.job_data= []
     
-    def extract_job_ids(self,html: BeautifulSoup):
+    def extract_job_ids(self, html: BeautifulSoup):
         # Check if there are job listings for given url
         title = html.title.text
-        match = re.search(r'\d+',title)
+        match = re.search(r'\d[\d,]*\d|\d',title)
         if match:
             # Extract job id for each listing
             job_divs = html.find_all('div', class_ = 'base-card relative w-full hover:no-underline focus:no-underline base-card--link base-search-card base-search-card--link job-search-card')
@@ -91,6 +86,8 @@ class Scraper():
                         group = 'Data Science / Engineering'
                 elif 'etl' in job_title.lower():
                     group = 'Data Science / Engineering'
+                elif 'analytics engineer' in job_title.lower():
+                    group = 'Data Science / Engineering'
                 elif 'manager' in job_title.lower() or 'director' in job_title.lower() or 'head' in job_title.lower():
                     group = 'Management'
                 elif 'test' in job_title.lower() or 'testing' in job_title.lower() or 'qa' in job_title.lower() or 'quality assurance' in job_title.lower() \
@@ -126,6 +123,11 @@ class Scraper():
             for database in Scraper.databases:
                 if re.search(database, description, re.IGNORECASE):
                     databases.append(database)
+            if 'SQL Server' in databases and 'MS SQL' not in databases:
+                index = databases.index('SQL Server')
+                databases[index] = 'MS SQL'
+            if 'SQL Server' in databases and 'MS SQL' in databases:
+                databases.remove('SQL Server')
         except:
             databases = None
         # Extract cloud provider
@@ -148,6 +150,7 @@ class Scraper():
             link = None
         # Date posted
         date_posted = datetime.date.today()
-        # Append to list
-        self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
-        'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
+        # Append to list if group != none
+        if group != None:
+            self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
+            'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
