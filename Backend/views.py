@@ -2,11 +2,10 @@ from flask import Blueprint, request, jsonify, make_response
 from flask_restful import Api, Resource
 from flask_httpauth import HTTPBasicAuth
 from mongoengine.errors import ValidationError
+import json
 from httpstatus import HttpStatus
 from models import jobData, User
 from linkedin_scraper import *
-import json
-import datetime
 
 job_data_blueprint = Blueprint('job_data',__name__)
 job_data = Api(job_data_blueprint)
@@ -37,6 +36,9 @@ class jobDataResource(Resource):
                 query_args['databases__in'] = list(request.args.getlist(arg))
             elif arg == 'cloud':
                 query_args['cloudProviders__in'] = list(request.args.getlist(arg))
+            elif arg == 'days_old':
+                query_args['datePosted__gte'] = datetime.datetime.now().date() - datetime.timedelta(days = int(request.args.get(arg)))
+                print (query_args['datePosted__gte'])
         # Query jobData. If date_order == ascending specified, return jobs in ascending order else descending
         if request.args.get('date_order'):
             if request.args.get('date_order') == 'ascending':
