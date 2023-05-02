@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ZingJP469
+      MONGO_INITDB_ROOT_PASSWORD: Forzschem10
+
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI="mongodb://ZingJP469:Forzschem10@mongo:27017/admin"

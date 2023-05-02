@@ -38,7 +38,6 @@ class jobDataResource(Resource):
                 query_args['cloudProviders__in'] = list(request.args.getlist(arg))
             elif arg == 'days_old':
                 query_args['datePosted__gte'] = datetime.datetime.now().date() - datetime.timedelta(days = int(request.args.get(arg)))
-                print (query_args['datePosted__gte'])
         # Query jobData. If date_order == ascending specified, return jobs in ascending order else descending
         if request.args.get('date_order'):
             if request.args.get('date_order') == 'ascending':
@@ -179,6 +178,7 @@ class UserResource(Resource):
     def post(self):
         user_register_dict = request.get_json()
         # Check if I have already created an admin user
+        print(User.objects(admin=True))
         is_admin = User.objects(admin = True).count()
         if is_admin != 1:
             try:
