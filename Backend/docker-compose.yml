@@ -6,8 +6,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ZingJP469
-      MONGO_INITDB_ROOT_PASSWORD: Forzschem10
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 
   api:
     build: .
@@ -16,4 +16,4 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGO_URI="mongodb://ZingJP469:Forzschem10@mongo:27017/admin"
+      - MONGO_URI=${MONGO_URI}

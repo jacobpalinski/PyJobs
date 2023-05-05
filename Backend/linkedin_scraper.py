@@ -176,4 +176,5 @@ class Scraper():
             self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
             'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
     
-    def extract_to_s3(self)
+    def extract_to_s3(self):
+        pass
