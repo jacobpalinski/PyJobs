@@ -1,6 +1,39 @@
 import pytest
-from linkedin_scraper import *
 import requests_mock
+import boto3
+from linkedin_scraper import *
+
+@pytest.fixture
+def mock_job_data():
+    job_data = [{'Job_Id':3556628474, 'Company': 'Quantexa', 'Location': 'Sydney', 'Job Title': 'Data Engineer', 'Group': 'Data Science / Engineering',
+    'Programming Languages': ['Python'], 'Databases': ['ElasticSearch'], 'Cloud Providers': ['GCP'], 
+    'Link': 'https://au.linkedin.com/jobs/view/data-engineer-at-quantexa-3556628474?trk=public_jobs_topcard-title', 
+    'Date Posted': datetime.date.today().strftime('%Y-%m-%d')},
+    {'Job_Id':3554271516, 'Company': 'Info Way Solutions', 'Location': 'Fremont', 'Job Title': 'Big Data Developer', 'Group': 'Data Science / Engineering',
+    'Programming Languages': ['Python'], 'Databases': [], 'Cloud Providers': ['AWS'], 
+    'Link': 'https://www.linkedin.com/jobs/view/big-data-developer-at-info-way-solutions-3554271516?trk=public_jobs_topcard-title', 
+    'Date Posted': datetime.date.today().strftime('%Y-%m-%d')}]
+    return job_data
+
+@pytest.fixture
+def s3_mock(mocker,mock_job_data):
+    mocker.patch("boto3.client", return_value = mocker.MagicMock())
+    s3_mock = S3Bucket('pyscript-scraped-jobs','access_key','secret access key')
+    s3_mock.s3.get_object.return_value = {
+        'Body': mocker.MagicMock(read = mocker.MagicMock(return_value = json.dumps(mock_job_data).encode('utf-8')))
+    }
+    return s3_mock
+
+def test_put_data(s3_mock,mock_job_data):
+    current_date = datetime.date.today().strftime('%Y%m%d')
+    s3_mock.put_data(mock_job_data,f'job_data{current_date}.json')
+    s3_mock.s3.put_object.assert_called_once_with(Bucket = 'pyscript-scraped-jobs', Key = 'job_data20230505.json', Body=json.dumps(mock_job_data))
+
+def test_get_data(s3_mock,mock_job_data):
+    output = s3_mock.get_data('job_data20230505.json')
+    print(output)
+    s3_mock.s3.get_object.assert_called_once_with(Bucket = 'pyscript-scraped-jobs', Key = 'job_data20230505.json')
+    assert output == mock_job_data
 
 @pytest.fixture
 def generate_url_instance():

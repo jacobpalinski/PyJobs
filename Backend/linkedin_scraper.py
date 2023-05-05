@@ -3,6 +3,27 @@ from bs4 import BeautifulSoup
 import math
 import regex as re
 import datetime
+import boto3
+import json
+
+class S3Bucket:
+    def __init__(self,bucket_name,access_key_id,secret_access_key):
+        # Initialise an S3 bucket object with specified name and credentials
+        self.bucket_name = bucket_name
+        self.s3 = boto3.client('s3', aws_access_key_id = access_key_id, aws_secret_access_key = secret_access_key)
+    
+    def put_data(self,job_data,object_name):
+        # Uploads a file to S3 bucket
+        json_data = json.dumps(job_data)
+        print('This is json data: ', json_data)
+        self.s3.put_object(Bucket = self.bucket_name, Key= object_name, Body = json_data)
+    
+    def get_data(self,file_path):
+        # Downloads a file from the S3 bucket
+        response = self.s3.get_object(Bucket = self.bucket_name, Key = file_path)
+        contents = response['Body'].read().decode('utf-8')
+        job_data = json.loads(contents)
+        return job_data
 
 class GenerateUrl():
     @staticmethod
@@ -154,3 +175,5 @@ class Scraper():
         if group != None:
             self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
             'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
+    
+    def extract_to_s3(self)
