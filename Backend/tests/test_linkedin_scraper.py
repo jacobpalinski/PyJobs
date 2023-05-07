@@ -2,6 +2,9 @@ import pytest
 import requests_mock
 import boto3
 from linkedin_scraper import *
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @pytest.fixture
 def mock_job_data():
@@ -27,12 +30,12 @@ def s3_mock(mocker,mock_job_data):
 def test_put_data(s3_mock,mock_job_data):
     current_date = datetime.date.today().strftime('%Y%m%d')
     s3_mock.put_data(mock_job_data)
-    s3_mock.s3.put_object.assert_called_once_with(Bucket = None, Key = f'job_data{current_date}.json', Body=json.dumps(mock_job_data))
+    s3_mock.s3.put_object.assert_called_once_with(Bucket = 'pyscript-scraped-jobs', Key = f'job_data{current_date}.json', Body=json.dumps(mock_job_data))
 
 def test_get_data(s3_mock,mock_job_data):
     current_date = datetime.date.today().strftime('%Y%m%d')
     output = s3_mock.get_data(f'job_data{current_date}.json')
-    s3_mock.s3.get_object.assert_called_once_with(Bucket = None, Key = f'job_data{current_date}.json')
+    s3_mock.s3.get_object.assert_called_once_with(Bucket = 'pyscript-scraped-jobs', Key = f'job_data{current_date}.json')
     assert output == mock_job_data
 
 @pytest.fixture
