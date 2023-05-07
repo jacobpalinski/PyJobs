@@ -7,9 +7,13 @@ from httpstatus import HttpStatus
 from models import jobData, User
 from linkedin_scraper import *
 
+# Load environment variables for S3
+load_dotenv()
+
 job_data_blueprint = Blueprint('job_data',__name__)
 job_data = Api(job_data_blueprint)
 auth = HTTPBasicAuth()
+s3 = S3Bucket()
 
 @auth.verify_password
 def verify_password(username,password):
@@ -60,34 +64,18 @@ class jobDataResource(Resource):
         if not user.admin:
             return {'message': 'You need admin privileges to add jobs'}, HttpStatus.forbidden_403.value
         
-        linkedin_scraper = Scraper()
-        for location in Scraper.locations:
-            # Retrieve total number of listings from initial loading page
-            initial_url = GenerateUrl.generate_listings_url(location,0)
-            html = HTMLRetriever.get_html(initial_url)
-            title = html.title.text
-            num_listings = re.search(r'\d[\d,]*\d|\d',title)
+        # Data file named for current date
+        current_date = datetime.date.today().strftime('%Y%m%d')
+        data_file = f'job_data{current_date}.json'
+        
+        # Load job data from S3
+        job_data = s3.get_data(data_file)
 
-            if num_listings:
-                num_listings_str = num_listings.group().replace(",","")
-                print(num_listings_str)
-                num_loops = math.ceil(int(num_listings_str)/25)
-                print(num_loops)
-                start_num = 0
-                # Extract job_id from all listings
-                for loop in range(0,1): # put num loops back in later
-                    url = GenerateUrl.generate_listings_url(location,start_num)
-                    html = HTMLRetriever.get_html(url)
-                    linkedin_scraper.extract_job_ids(html)
-                    start_num += 25
-                # Extract relevant job details from each listing
-                for job_id in linkedin_scraper.job_ids:
-                    job_details_url = GenerateUrl.generate_job_details_url(job_id)
-                    job_details_html = HTMLRetriever.get_html(job_details_url)
-                    linkedin_scraper.extract_job_data(job_id,job_details_html)
+        # Convert to list of dictionaries
+        jobs_dict = [dict(job) for job in job_data]
             
         # Check if job_id for job is in jobData database
-        for job in linkedin_scraper.job_data:
+        for job in jobs_dict:
             queryset = jobData.objects(jobId = job['Job_Id'])
             if len(queryset) != 0:
                 continue

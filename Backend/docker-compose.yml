@@ -8,6 +8,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      TZ: Asia/Singapore
 
   api:
     build: .
@@ -17,3 +18,4 @@ services:
       - mongo
     environment:
       - MONGO_URI=${MONGO_URI}
+      - TZ=Asia/Singapore
