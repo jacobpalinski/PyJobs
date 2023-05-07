@@ -5,17 +5,28 @@ import regex as re
 import datetime
 import boto3
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables for S3
+load_dotenv()
 
 class S3Bucket:
-    def __init__(self,bucket_name,access_key_id,secret_access_key):
-        # Initialise an S3 bucket object with specified name and credentials
+    # Initialise an S3 bucket object with specified name and credentials
+    def __init__(self,bucket_name = os.environ.get('S3_BUCKET_NAME'),
+    access_key_id = os.environ.get('AWS_ACCESS_KEY_ID'),
+    secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY_ID')):
         self.bucket_name = bucket_name
-        self.s3 = boto3.client('s3', aws_access_key_id = access_key_id, aws_secret_access_key = secret_access_key)
+        self.access_key_id = access_key_id
+        self.secret_access_key = secret_access_key
+        self.s3 = boto3.client('s3', aws_access_key_id = self.access_key_id, aws_secret_access_key = self.secret_access_key)
     
-    def put_data(self,job_data,object_name):
+    def put_data(self,job_data):
+        # Create object name
+        current_date = datetime.date.today().strftime('%Y%m%d')
+        object_name = f'job_data{current_date}.json'
         # Uploads a file to S3 bucket
         json_data = json.dumps(job_data)
-        print('This is json data: ', json_data)
         self.s3.put_object(Bucket = self.bucket_name, Key= object_name, Body = json_data)
     
     def get_data(self,file_path):
@@ -50,9 +61,10 @@ class Scraper():
     databases = ["MySQL","PostgreSQL","SQLite","MongoDB", "MS SQL",
     "SQL Server","MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
     cloud_providers = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]
-    locations = ["European%20Economic%20Area"] # Other locations to be added later when AWS code works
+    locations = ["Helsinki"] # Other locations to be added later when AWS code works
 
     def __init__(self):
+        self.bucket = S3Bucket()
         self.job_ids= []
         self.job_data= []
     
@@ -170,11 +182,41 @@ class Scraper():
         except:
             link = None
         # Date posted
-        date_posted = datetime.date.today()
+        date_posted = datetime.date.today().strftime('%Y-%m-%d')
         # Append to list if group != none
         if group != None:
             self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
             'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
     
     def extract_to_s3(self):
-        pass
+        for location in Scraper.locations:
+            # Retrieve total number of listings from initial loading page
+            initial_url = GenerateUrl.generate_listings_url(location,0)
+            html = HTMLRetriever.get_html(initial_url)
+            title = html.title.text
+            num_listings = re.search(r'\d[\d,]*\d|\d',title)
+
+            if num_listings:
+                num_listings_str = num_listings.group().replace(",","")
+                print(num_listings_str)
+                num_loops = math.ceil(int(num_listings_str)/25)
+                print(num_loops)
+                start_num = 0
+                # Extract job_id from all listings
+                for loop in range(0,1): # put num loops back in later
+                    url = GenerateUrl.generate_listings_url(location,start_num)
+                    html = HTMLRetriever.get_html(url)
+                    self.extract_job_ids(html)
+                    start_num += 25
+                # Extract relevant job details from each listing
+                for job_id in self.job_ids:
+                    job_details_url = GenerateUrl.generate_job_details_url(job_id)
+                    job_details_html = HTMLRetriever.get_html(job_details_url)
+                    self.extract_job_data(job_id,job_details_html)
+        # Put scraped data into S3 Bucket
+        self.bucket.put_data(self.job_data)
+
+# Run Script
+if __name__ == '__main__':
+    linkedin_scraper = Scraper()
+    linkedin_scraper.extract_to_s3()
