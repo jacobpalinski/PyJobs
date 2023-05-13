@@ -15,7 +15,7 @@ class S3Bucket:
     # Initialise an S3 bucket object with specified name and credentials
     def __init__(self,bucket_name = os.environ.get('S3_BUCKET_NAME'),
     access_key_id = os.environ.get('AWS_ACCESS_KEY_ID'),
-    secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY_ID')):
+    secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')):
         self.bucket_name = bucket_name
         self.access_key_id = access_key_id
         self.secret_access_key = secret_access_key

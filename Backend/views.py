@@ -160,7 +160,7 @@ class jobDataResource(Resource):
             data.delete()
             return {'message': 'Old jobs deleted successfully'}, HttpStatus.ok_200.value
         except Exception as e:
-            return {'message': e}, HttpStatus.notfound_404.value
+            return {'message': str(e)}, HttpStatus.notfound_404.value
 
 class UserResource(Resource):
     def post(self):

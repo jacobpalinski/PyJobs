@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+  jobDataPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda.lambda_handler
+      Runtime: python3.8
+      ImageUri: 320264762283.dkr.ecr.ap-southeast-1.amazonaws.com/pyscript-repo:latest
+      Environment: 
+        Variables:
+          MONGO_URI : ${MONGO_URI}
+          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      Events:
+        PostEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 22 * * ? *)
+            Input: '{"path": "/job_data/jobData/", "httpMethod": "POST"}'
+  
+  jobDataDelete:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda.lambda_handler
+      Runtime: python3.8
+      ImageUri: 320264762283.dkr.ecr.ap-southeast-1.amazonaws.com/pyscript-repo:latest
+      Environment: 
+        Variables:
+          MONGO_URI : ${MONGO_URI}
+          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      Events:
+        DeleteEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 23 * * ? *)
+            Input: '{"path": "/job_data/jobData/", "httpMethod": "DELETE"}'
+  
+  jobDataPatch:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda.lambda_handler
+      Runtime: python3.8
+      ImageUri: 320264762283.dkr.ecr.ap-southeast-1.amazonaws.com/pyscript-repo:latest
+      Environment:
+        Variables:
+          MONGO_URI : ${MONGO_URI}
+          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      Events:
+        PatchEvent:
+          Type: Api
+          Properties:
+            Path: /job_data/jobData/{id}
+            Method: PATCH
+  
+  jobDataGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda.lambda_handler
+      Runtime: python3.8
+      ImageUri: 320264762283.dkr.ecr.ap-southeast-1.amazonaws.com/pyscript-repo:latest
+      Environment:
+        Variables:
+          MONGO_URI : ${MONGO_URI}
+          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /job_data/jobData/
+            Method: GET
+  
+  UserPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda.lambda_handler
+      Runtime: python3.8
+      ImageUri: 320264762283.dkr.ecr.ap-southeast-1.amazonaws.com/pyscript-repo:latest
+      Environment:
+        Variables:
+          MONGO_URI : ${MONGO_URI}
+          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /job_data/user/
+            Method: POST
+
+
+  
+
+
+
