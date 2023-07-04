@@ -67,6 +67,8 @@ button {
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 button:active {
@@ -126,6 +128,11 @@ input {
 	z-index: 2;
 }
 
+.sign-in-container p {
+	margin: 0 10px;
+	color: #C21E56;
+}
+
 .container.right-panel-active .sign-in-container {
 	transform: translateX(100%);
 }
@@ -135,6 +142,11 @@ input {
 	width: 50%;
 	opacity: 0;
 	z-index: 1;
+}
+
+.sign-up-container p {
+	margin: 0 10px;
+	color: #C21E56;
 }
 
 .container.right-panel-active .sign-up-container {

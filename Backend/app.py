@@ -1,11 +1,14 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 from models import db
 from views import job_data_blueprint
 
 def create_app(config_filename):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(config_filename)
+
     # Config for Docker below
     ''' app.config['MONGODB_SETTINGS'] = {
         'host': os.environ.get('HOST'),
