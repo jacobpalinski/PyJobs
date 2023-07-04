@@ -180,5 +180,28 @@ class UserResource(Resource):
         else:
             return {'message': 'Admin user already exists. If admin login'}, HttpStatus.conflict_409.value
 
-job_data.add_resource(jobDataResource, '/jobData/','/jobData/<int:id>')
-job_data.add_resource(UserResource, '/user/')
+class LoginResource(Resource):
+    def post(self):
+        login_dict = request.get_json()
+        try:
+            user = User.objects(username = login_dict['username']).first()
+            if user and user.check_password(login_dict['password']):
+              auth_token = user.encode_auth_token(str(user.id))
+              if auth_token:
+                response = {
+                'message': 'successfully logged in',
+                'auth_token': auth_token.decode()}
+                return response, HttpStatus.ok_200.value
+            else:
+                response = {'message': 'User does not exist'}
+                return response, HttpStatus.notfound_404.value
+        
+        except Exception as e:
+            print(e)
+            response = {'message': 'Try again'}
+            return response, HttpStatus.internal_server_error.value  
+
+
+job_data.add_resource(jobDataResource, '/jobData','/jobData/<int:id>')
+job_data.add_resource(UserResource, '/user')
+job_data.add_resource(LoginResource, '/user/login')

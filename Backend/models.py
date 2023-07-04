@@ -1,6 +1,11 @@
-from flask_mongoengine import MongoEngine
 import datetime
+import jwt
+import os
+from flask_mongoengine import MongoEngine
 from flask_bcrypt import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db = MongoEngine()
 
@@ -28,3 +33,31 @@ class User(db.Document):
     
     def check_password(self,password):
         return check_password_hash(self.password, password)
+    
+    def encode_auth_token(self,user_id):
+        # Generate Auth Token
+        try:
+            payload = {
+                'exp':datetime.datetime.utcnow() + datetime.timedelta(days = 1),
+                'iat':datetime.datetime.utcnow(),
+                'sub': user_id
+            }
+            return jwt.encode(
+                payload,
+                os.environ.get('SECRET_KEY'),
+                algorithm = 'HS256'
+            )
+        except Exception as e:
+            return e
+    
+    @staticmethod
+    def decode_auth_token(auth_token):
+        # Decode Auth Token
+        try:
+            payload = jwt.decode(auth_token, os.environ.get('SECRET_KEY'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again'
+    
