@@ -149,6 +149,11 @@ input {
 	color: #C21E56;
 }
 
+.sign-up-container p:nth-child(3) {
+	margin: 0 10px;
+	color: #228B22;
+}
+
 .container.right-panel-active .sign-up-container {
 	transform: translateX(100%);
 	opacity: 1;
