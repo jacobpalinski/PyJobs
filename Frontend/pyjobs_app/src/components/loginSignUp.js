@@ -1,11 +1,14 @@
 import '../css/loginSignUp.css';
 import {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 /* import {useNavigate} from 'react-router-dom'; (redirection in individual component files)
 import {BrowserRouter, Routes, Route, Link} from 'react-router-dom' in App.js (for defining routes in return)
 import LoginSignUp from "./path" */
 
 export default function LoginSignUp() {
-	const initialValues = { username: "", password: ""}
+	const initialValues = { username: "", password: ""};
+	const currentTime = new Date();
+	const navigate = useNavigate();
 	const [signInFormValues, setSignInFormValues] = useState(initialValues);
 	const [signUpFormValues, setSignUpFormValues] = useState(initialValues);
 	const [signInFormErrors, setSignInFormErrors] = useState({});
@@ -15,8 +18,6 @@ export default function LoginSignUp() {
 	const [login, setLogin] = useState(true);
 	const [registered, setRegistered] = useState(false);
 	const [isSignUpActive, setIsSignUpActive] = useState(false);
-
-	// const navigate = useNavigate();
 
 	const handleSignInChange = (e) => {
 		const {name, value} = e.target;
@@ -59,8 +60,10 @@ export default function LoginSignUp() {
 						const data = await response.json();
 						console.log(data);
 						localStorage.setItem('auth_token', data.auth_token);
+						currentTime.setHours(currentTime.getHours() + 1);
+						localStorage.setItem('expiration', currentTime.toString());
 						setSignInSubmit(false);
-						// navigate()
+						navigate('/jobs')
 					} else {
 						setLogin(false);
 						const errorData = await response.json();

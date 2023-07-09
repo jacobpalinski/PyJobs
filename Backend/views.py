@@ -32,6 +32,8 @@ class jobDataResource(Resource):
                 query_args['location__in'] = list(request.args.getlist(arg))
             elif arg == 'company':
                 query_args['company__in'] = list(request.args.getlist(arg))
+            elif arg == 'jobTitle':
+                query_args['jobTitle__icontains'] = request.args.get(arg)
             elif arg == 'group':
                 query_args['group__in'] = list(request.args.getlist(arg))
             elif arg == 'language':
@@ -108,8 +110,6 @@ class jobDataResource(Resource):
                 data.company = request.args.get('company')
             if 'location' in request.args:
                 data.location = request.args.get('location')
-            if 'industry' in request.args:
-                data.industry = request.args.get('industry')
             if 'jobTitle' in request.args:
                 data.jobTitle = request.args.get('jobTitle')
             if 'group' in request.args:
