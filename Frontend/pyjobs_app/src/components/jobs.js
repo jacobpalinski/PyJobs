@@ -10,6 +10,7 @@ export default function Jobs() {
     const [datePosted, setDatePosted] = useState(0);
     const [jobTitle, setJobTitle] = useState("");
     const [selectedDatabases, setSelectedDatabases] = useState([]);
+    const [selectedCloudProviders, setSelectedCloudProviders] = useState([]);
     const databases = [
         {value: "MySQL", label: "MySQL"},
         {value: "PostgreSQL", label: "PostgreSQL"},
@@ -22,10 +23,16 @@ export default function Jobs() {
         {value: "ElasticSearch", label: "ElasticSearch"},
         {value: "Oracle", label: "Oracle"},
         {value: "DynamoDB", label: "DynamoDB"}
-        ]
+    ];
+    const cloudProviders = [
+        {value: "Amazon Web Services", label: "Amazon Web Services"},
+        {value: "AWS", label: "AWS"},
+        {value: "Azure", label: "Azure"},
+        {value: "Google Cloud", label: "Google Cloud"},
+        {value: "GCP", label: "GCP"}
+    ];
 
     console.log(data);
-    console.log(selectedDatabases);
 
     //custom data
     useEffect(() => {
@@ -52,11 +59,22 @@ export default function Jobs() {
             }
 
             if (jobTitle) {
-                queryParams.push(`jobTitle=${jobTitle}`)
+                queryParams.push(`jobTitle=${jobTitle}`);
             }
 
-            // Add if (databases)
+            if (selectedDatabases) {
+                selectedDatabases.forEach( (database) => {
+                    queryParams.push(`database=${database}`);
+                })
+            }
 
+            if (selectedCloudProviders) {
+                selectedCloudProviders.forEach( (provider) => {
+                    queryParams.push(`cloud=${provider}`);
+                })
+            }
+
+            console.log(queryParams);
 
             if (queryParams.length > 0) {
                 url += `?${queryParams.join('&')}`;
@@ -76,7 +94,7 @@ export default function Jobs() {
             }
         };
         fetchjobData();
-    }, [location, company, group, datePosted, jobTitle])
+    }, [location, company, group, datePosted, jobTitle, selectedDatabases, selectedCloudProviders]);
 
     // select onchange function getting option selected value and save inside state variable
     function handleLocationChange (e) {
@@ -100,7 +118,11 @@ export default function Jobs() {
     }
 
     function handleSelectedDatabases (e) {
-        setSelectedDatabases(e.map(database => database.value))
+        setSelectedDatabases(e.map(database => database.value));
+    }
+
+    function handleSelectedCloudProviders (e) {
+        setSelectedCloudProviders(e.map(provider => provider.value));
     }
 
     //hooks calls after rendering select state
@@ -149,6 +171,10 @@ export default function Jobs() {
                     <div className="databases">
                         <label className="form-label">Databases</label>
                         <Select options={databases} onChange={handleSelectedDatabases} isMulti/>
+                    </div>
+                    <div className="cloud-providers">
+                        <label className="form-label">Cloud Providers</label>
+                        <Select options={cloudProviders} onChange={handleSelectedCloudProviders} isMulti/>
                     </div>
                     <div className="jobtitle">
                         <label className="form-label">Job Title</label>
