@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
 import '../css/jobs.css';
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
 
 export default function Jobs() {
     let [data, setData] = useState([]);
-    const [location, setLocation] = useState("");
+    const [location, setLocation] = useState([]);
     const [company, setCompany] = useState("");
     const [group, setGroup] = useState("");
     const [datePosted, setDatePosted] = useState(0);
@@ -43,7 +44,9 @@ export default function Jobs() {
             const queryParams = [];
 
             if (location) {
-                queryParams.push(`location=${location}`);
+                location.forEach( (location) => {
+                    queryParams.push(`location=${location}`);
+                })
             }
 
             if (company) {
@@ -98,7 +101,7 @@ export default function Jobs() {
 
     // select onchange function getting option selected value and save inside state variable
     function handleLocationChange (e) {
-        setLocation(e.target.value);
+        setLocation(e.map(location => location.value));
     };
 
     function handleCompanyChange (e) {
@@ -125,6 +128,18 @@ export default function Jobs() {
         setSelectedCloudProviders(e.map(provider => provider.value));
     }
 
+    const loadLocationOptions = async (searchValue) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?location=${searchValue}`);
+            const data = await response.json();
+            const uniqueLocations = Array.from(new Set(data.map(job => job.location)));
+            return uniqueLocations.map(location => ({ value: location, label: location }));
+        } catch (error) {
+            console.error('Error retrieving location data', error);
+            return [];
+        }
+    }
+
     //hooks calls after rendering select state
     /*useEffect(() => {
         // Doing filtration based on location
@@ -148,11 +163,7 @@ export default function Jobs() {
                     </div>
                     <div className="location">
                         <label className="form-label">Location</label>
-                            <select id="city" onChange={handleLocationChange} className="form-select">
-                                <option value="Glasgow">Glasgow</option>
-                                <option value="Barcelona">Barcelona</option>
-                                <option value="Berlin">Berlin</option>
-                            </select>
+                        <AsyncSelect cacheOptions defaultOptions loadOptions={loadLocationOptions} onChange={handleLocationChange} isMulti />
                     </div>
                     <div className="company">
                         <label className="form-label">Company</label>
