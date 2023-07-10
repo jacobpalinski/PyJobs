@@ -1,12 +1,13 @@
 import {useEffect, useState} from 'react';
 import '../css/jobs.css';
+import Pagination from './pagination';
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 
 export default function Jobs() {
     let [data, setData] = useState([]);
-    const [location, setLocation] = useState([]);
-    const [company, setCompany] = useState("");
+    const [locations, setLocations] = useState([]);
+    const [companies, setCompanies] = useState("");
     const [group, setGroup] = useState("");
     const [datePosted, setDatePosted] = useState(0);
     const [jobTitle, setJobTitle] = useState("");
@@ -32,6 +33,13 @@ export default function Jobs() {
         {value: "Google Cloud", label: "Google Cloud"},
         {value: "GCP", label: "GCP"}
     ];
+    const [currentPage, setCurrentPage] = useState(1);
+    const[postsPerPage] = useState(3);
+
+    const indexofLastPost = currentPage * postsPerPage;
+    const indexofFirstPost = indexofLastPost - postsPerPage;
+    const currentPosts= data.slice(indexofFirstPost,indexofLastPost);
+    const howManyPages = Math.ceil(data.length/postsPerPage);
 
     console.log(data);
 
@@ -43,14 +51,16 @@ export default function Jobs() {
             // Query parameters based on selected values
             const queryParams = [];
 
-            if (location) {
-                location.forEach( (location) => {
+            if (locations) {
+                locations.forEach( (location) => {
                     queryParams.push(`location=${location}`);
                 })
             }
 
-            if (company) {
-                queryParams.push(`company=${company}`);
+            if (companies) {
+                companies.forEach( (company) => {
+                    queryParams.push(`company=${company}`);
+                } )
             }
 
             if (group) {
@@ -97,15 +107,15 @@ export default function Jobs() {
             }
         };
         fetchjobData();
-    }, [location, company, group, datePosted, jobTitle, selectedDatabases, selectedCloudProviders]);
+    }, [locations, companies, group, datePosted, jobTitle, selectedDatabases, selectedCloudProviders]);
 
     // select onchange function getting option selected value and save inside state variable
-    function handleLocationChange (e) {
-        setLocation(e.map(location => location.value));
+    function handleLocationsChange (e) {
+        setLocations(e.map(location => location.value));
     };
 
-    function handleCompanyChange (e) {
-        setCompany(e.target.value);
+    function handleCompaniesChange (e) {
+        setCompanies(e.map(company => company.value));
     }
 
     function handleGroupChange (e) {
@@ -128,12 +138,26 @@ export default function Jobs() {
         setSelectedCloudProviders(e.map(provider => provider.value));
     }
 
-    const loadLocationOptions = async (searchValue) => {
+    const loadLocationsOptions = async (searchValue, callback) => {
         try {
             const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?location=${searchValue}`);
             const data = await response.json();
             const uniqueLocations = Array.from(new Set(data.map(job => job.location)));
-            return uniqueLocations.map(location => ({ value: location, label: location }));
+            const options = uniqueLocations.map(location => ({ value: location, label: location }));
+            callback(options);
+        } catch (error) {
+            console.error('Error retrieving location data', error);
+            return [];
+        }
+    }
+
+    const loadCompaniesOptions = async (searchValue, callback) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?company=${searchValue}`);
+            const data = await response.json();
+            const uniqueCompanies = Array.from(new Set(data.map(job => job.company)));
+            const options = uniqueCompanies.map(company => ({ value: company, label: company}));
+            callback(options);
         } catch (error) {
             console.error('Error retrieving location data', error);
             return [];
@@ -161,16 +185,13 @@ export default function Jobs() {
                                 <option value="Graduate Software Developer (Python)">Graduate Software Developer (Python)</option>
                             </select>
                     </div>
-                    <div className="location">
-                        <label className="form-label">Location</label>
-                        <AsyncSelect cacheOptions defaultOptions loadOptions={loadLocationOptions} onChange={handleLocationChange} isMulti />
+                    <div className="locations">
+                        <label className="form-label">Locations</label>
+                        <AsyncSelect defaultOptions loadOptions={loadLocationsOptions} onChange={handleLocationsChange} isMulti />
                     </div>
                     <div className="company">
-                        <label className="form-label">Company</label>
-                        <select id="company" onChange={handleCompanyChange} className="form-select">
-                            <option value="Reloadly">Reloadly</option>
-                            <option value="ClickJobs.io">ClickJobs.io</option>
-                        </select>
+                        <label className="form-label">Companies</label>
+                        <AsyncSelect defaultOptions loadOptions={loadCompaniesOptions} onChange={handleCompaniesChange} isMulti />
                     </div>
                     <div className="group">
                         <label className="form-label">Group</label>
@@ -208,7 +229,7 @@ export default function Jobs() {
                     </thead>
                     <tbody>
                         { // calling the state variable to filter data inside table
-                        data.map(function({datePosted,location,company,group,jobTitle,databases,cloudProviders,link})
+                        currentPosts.map(function({datePosted,location,company,group,jobTitle,databases,cloudProviders,link})
                         {
                             return (
                                 <tr>
@@ -225,7 +246,9 @@ export default function Jobs() {
                         })}
                     </tbody>
                 </table>
-            </div> ) : (<p>No jobs exist for given filters</p>)}
+                <Pagination pages = {howManyPages} setCurrentPage={setCurrentPage}/>
+            </div>
+             ) : (<p>No jobs exist for given filters</p>)}
         </div>
     </div>
     );
