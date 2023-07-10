@@ -21,7 +21,7 @@
 }
 
 .pagination-container a.active {
-    background-color: #007bff;
+    background-color: #7cbddb;
     color: #ffffff;
     border: 1px solid #7cbddb;
 }
@@ -31,5 +31,6 @@
 }
 
 .pagination-container a:hover:not(.active) {
-    background-color: #EEEEEE;
+    background-color: #7cbddb;
+    color: #ffffff;
 }

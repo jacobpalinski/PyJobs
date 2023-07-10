@@ -56,15 +56,16 @@ export default function Pagination( {pages, setCurrentPage}) {
             setCurrentButton(arrOfCurrButtons[3] - 2)
         }
 
-        setArrofCurrButtons(tempNumberOfPages)
-        
-        if (numberOfPages.length < currentButton) {
+        setArrofCurrButtons(tempNumberOfPages);
+
+        if (pages < currentButton) {
             setCurrentButton(1)
             setCurrentPage(currentButton);
         } else {
             setCurrentPage(currentButton);
         }
-    }, [currentButton, numberOfPages])
+
+    }, [currentButton, pages]);
 
     return (
         <div className="pagination-container">
