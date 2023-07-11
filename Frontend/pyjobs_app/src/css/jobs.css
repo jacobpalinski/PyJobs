@@ -1,6 +1,10 @@
+html {
+  width: 100%;
+}
 
 #root {
     height: 85vh;
+    width: 100%;
 }
 
 .jobs-container {
@@ -122,5 +126,9 @@
   
   .table tbody tr:nth-child(even) {
     background-color: #f9f9f9;
+  }
+
+  p {
+    text-align: center;
   }
   
