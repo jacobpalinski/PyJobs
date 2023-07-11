@@ -8,11 +8,16 @@ export default function Jobs() {
     let [data, setData] = useState([]);
     const [locations, setLocations] = useState([]);
     const [companies, setCompanies] = useState("");
-    const [group, setGroup] = useState("");
+    const [jobGroup, setJobGroup] = useState("");
     const [datePosted, setDatePosted] = useState(0);
-    const [jobTitle, setJobTitle] = useState("");
+    const [selectedJobTitles, setSelectedJobTitles] = useState("");
     const [selectedDatabases, setSelectedDatabases] = useState([]);
     const [selectedCloudProviders, setSelectedCloudProviders] = useState([]);
+    const daysPostedAgo = [
+        {value: "14", label: "All"},
+        {value: "1", label: "< 1 day ago"},
+        {value: "7", label: "< 7 days ago"}
+    ];
     const databases = [
         {value: "MySQL", label: "MySQL"},
         {value: "PostgreSQL", label: "PostgreSQL"},
@@ -33,6 +38,16 @@ export default function Jobs() {
         {value: "Google Cloud", label: "Google Cloud"},
         {value: "GCP", label: "GCP"}
     ];
+    const jobGroups = [
+        {value: 'All', label: 'All'},
+        {value: "Data Science / Engineering", label: "Data Science / Engineering" },
+        {value: "Research", label: "Research"},
+        {value: "Management", label: "Management"},
+        {value: "Testing", label: "Testing"},
+        {value: "Software Engineering / Development", label: "Software Engineering / Development"},
+        {value: "Quantitative Finance / Trading", label: "Software Engineering / Development"}
+    ];
+
     const [currentPage, setCurrentPage] = useState(1);
     const[postsPerPage] = useState(3);
 
@@ -63,16 +78,20 @@ export default function Jobs() {
                 } )
             }
 
-            if (group) {
-                queryParams.push(`group=${group}`);
+            if (jobGroup) {
+                if (jobGroup !== 'All'){
+                    queryParams.push(`group=${jobGroup}`);
+                }
             }
 
             if (datePosted) {
                 queryParams.push(`days_old=${datePosted}`);
             }
 
-            if (jobTitle) {
-                queryParams.push(`jobTitle=${jobTitle}`);
+            if (selectedJobTitles) {
+                selectedJobTitles.forEach( (jobTitle) => {
+                    queryParams.push(`jobTitle=${jobTitle}`);
+                })
             }
 
             if (selectedDatabases) {
@@ -107,7 +126,7 @@ export default function Jobs() {
             }
         };
         fetchjobData();
-    }, [locations, companies, group, datePosted, jobTitle, selectedDatabases, selectedCloudProviders]);
+    }, [locations, companies, jobGroup, datePosted, selectedJobTitles, selectedDatabases, selectedCloudProviders]);
 
     // select onchange function getting option selected value and save inside state variable
     function handleLocationsChange (e) {
@@ -118,16 +137,16 @@ export default function Jobs() {
         setCompanies(e.map(company => company.value));
     }
 
-    function handleGroupChange (e) {
-        setGroup(e.target.value);
+    function handleJobGroupChange (e) {
+        setJobGroup(e.value);
     }
 
     function handleDatePosted (e) {
-        setDatePosted(e.target.value);
+        setDatePosted(e.value);
     }
 
-    function handleJobTitle (e) {
-        setJobTitle(e.target.value);
+    function handleSelectedJobTitles (e) {
+        setSelectedJobTitles(e.map(jobTitle => jobTitle.value));
     }
 
     function handleSelectedDatabases (e) {
@@ -146,7 +165,7 @@ export default function Jobs() {
             const options = uniqueLocations.map(location => ({ value: location, label: location }));
             callback(options);
         } catch (error) {
-            console.error('Error retrieving location data', error);
+            console.error('Error retrieving locations data', error);
             return [];
         }
     }
@@ -159,10 +178,24 @@ export default function Jobs() {
             const options = uniqueCompanies.map(company => ({ value: company, label: company}));
             callback(options);
         } catch (error) {
-            console.error('Error retrieving location data', error);
+            console.error('Error retrieving companies data', error);
             return [];
         }
     }
+
+    const loadJobTitlesOptions = async (searchValue, callback) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?jobTitle=${searchValue}`);
+            const data = await response.json();
+            const uniquejobTitles = Array.from(new Set(data.map(job => job.jobTitle)));
+            const options = uniquejobTitles.map(jobTitle => ({ value: jobTitle, label: jobTitle}));
+            callback(options);
+        } catch (error) {
+            console.error('Error retrieving job titles data', error);
+            return [];
+        }
+    }
+
 
     //hooks calls after rendering select state
     /*useEffect(() => {
@@ -180,25 +213,19 @@ export default function Jobs() {
                 <div className="filters">
                     <div className="date-posted">
                         <label className="form-label">Date Posted</label>
-                            <select id="date-posted" onChange={handleDatePosted} className="form-select">
-                                <option value={1}>&lt; 1 day</option>
-                                <option value="Graduate Software Developer (Python)">Graduate Software Developer (Python)</option>
-                            </select>
+                        <Select options={daysPostedAgo} onChange={handleDatePosted}/>
                     </div>
                     <div className="locations">
                         <label className="form-label">Locations</label>
-                        <AsyncSelect defaultOptions loadOptions={loadLocationsOptions} onChange={handleLocationsChange} isMulti />
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadLocationsOptions} onChange={handleLocationsChange} isMulti />
                     </div>
                     <div className="company">
                         <label className="form-label">Companies</label>
-                        <AsyncSelect defaultOptions loadOptions={loadCompaniesOptions} onChange={handleCompaniesChange} isMulti />
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadCompaniesOptions} onChange={handleCompaniesChange} isMulti />
                     </div>
                     <div className="group">
-                        <label className="form-label">Group</label>
-                        <select id="group" onChange={handleGroupChange} className="form-select">
-                            <option value="Software Engineering / Development">Software Engineering / Development</option>
-                            <option value="Data Science / Engineering">Data Science / Engineering</option>
-                        </select>
+                        <label className="form-label">Job Group</label>
+                        <Select options={jobGroups} onChange={handleJobGroupChange}/>
                     </div>
                     <div className="databases">
                         <label className="form-label">Databases</label>
@@ -210,7 +237,7 @@ export default function Jobs() {
                     </div>
                     <div className="jobtitle">
                         <label className="form-label">Job Title</label>
-                        <input type="text" name="search" onChange={handleJobTitle} placeholder="Job Title" />
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadJobTitlesOptions} onChange={handleSelectedJobTitles} isMulti />
                     </div>
                 </div>
                 {data.length !== 0 ? (<div className="table-container">
