@@ -69,7 +69,7 @@ export default function Pagination( {pages, setCurrentPage}) {
 
     return (
         <div className="pagination-container">
-            <a href="#" className={`${currentButton === 1 ? 'disabled' : ''}`} onClick={() => setCurrentButton(prev => prev <= 1 ? prev: prev - 1)}>
+            <a href="#" className={`pagination-link ${currentButton === 1 ? 'disabled' : ''}`} onClick={() => setCurrentButton(prev => prev <= 1 ? prev: prev - 1)}>
                 Prev
             </a>
 
@@ -79,7 +79,7 @@ export default function Pagination( {pages, setCurrentPage}) {
                 </a>
             }))}
 
-            <a href="#" className={`${currentButton === numberOfPages.length ? 'disabled' : ''}`} onClick={() => setCurrentButton(prev => prev >= numberOfPages.length ? prev : prev + 1)}>
+            <a href="#" className={`pagination-link ${currentButton === numberOfPages.length ? 'disabled' : ''}`} onClick={() => setCurrentButton(prev => prev >= numberOfPages.length ? prev : prev + 1)}>
                 Next
             </a>
         </div>

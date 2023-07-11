@@ -49,7 +49,7 @@ export default function Jobs() {
     ];
 
     const [currentPage, setCurrentPage] = useState(1);
-    const[postsPerPage] = useState(3);
+    const[postsPerPage] = useState(4);
 
     const indexofLastPost = currentPage * postsPerPage;
     const indexofFirstPost = indexofLastPost - postsPerPage;
@@ -197,7 +197,7 @@ export default function Jobs() {
     };
 
     const selectStyles = {
-        control: (styles, state) => ({...styles, height: state.selectProps.isMulti ? "100%" : "38px", width: "220px", backgroundColor: "#88abde", 
+        control: (styles, state) => ({...styles, height: state.selectProps.isMulti ? "100%" : "38px", width: "240px", backgroundColor: "#88abde", 
         borderColor: '#000000',
         boxShadow: '0 0 2px black',
         '&:hover': {borderColor: '#000000', boxShadow: '0 0 3px black'}}),
@@ -234,7 +234,7 @@ export default function Jobs() {
         }),
         multiValue: (styles) => ({
             ...styles,
-            backgroundColor: '#FFBF00',
+            backgroundColor: '#FFD700',
             borderRadius: '10px',
             display: 'inline-flex',
             '&:hover': {
@@ -314,7 +314,7 @@ export default function Jobs() {
                         noOptionsMessage={() => 'Select a valid option' }/>
                     </div>
                 </div>
-                {data.length !== 0 ? (<div className="table-container">
+                {data.length !== 0 ? (<div className="table-container rounded-table-container">
                 <table className="table">
                     <thead>
                         <tr>
