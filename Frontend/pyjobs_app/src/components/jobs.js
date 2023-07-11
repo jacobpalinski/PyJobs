@@ -197,7 +197,7 @@ export default function Jobs() {
     };
 
     const selectStyles = {
-        control: (styles, state) => ({...styles, height: "10px", width: "200px", backgroundColor: "#88abde", 
+        control: (styles, state) => ({...styles, height: state.selectProps.isMulti ? "100%" : "38px", width: "220px", backgroundColor: "#88abde", 
         borderColor: '#000000',
         boxShadow: '0 0 2px black',
         '&:hover': {borderColor: '#000000', boxShadow: '0 0 3px black'}}),
@@ -218,12 +218,40 @@ export default function Jobs() {
         dropdownIndicator: (styles, state) => ({...styles, 
         color: state.isHovered ? "#000000" : "#ffffff",
         '&:hover': {color: "#000000"}}),
+        clearIndicator: (styles, state) => ({
+            ...styles,
+            color: '#ffffff',
+            '&:hover': {
+                color: '#880808'
+            }
+        }),
         menu: (styles) => ({
             ...styles,
             borderColor: "#000000",
             boxShadow: '0 0 2px black',
             borderWidth: '1px',
             borderTop: 'none'
+        }),
+        multiValue: (styles) => ({
+            ...styles,
+            backgroundColor: '#FFBF00',
+            borderRadius: '10px',
+            display: 'inline-flex',
+            '&:hover': {
+                borderRadius: '10px'
+            }
+        }),
+        multiValueLabel: (styles) => ({
+            ...styles,
+            fontSize: '12px',
+            fontColor: '#000000'
+        }),
+        multiValueRemove: (styles, state) => ({
+            ...styles,
+            '&:hover': {
+                backgroundColor: '#000000',
+                color: '#880808'
+            }
         }),
         noOptionsMessage: (styles) => ({
             ...styles,
@@ -268,6 +296,13 @@ export default function Jobs() {
                         <Select options={jobGroups} onChange={handleJobGroupChange} placeholder="Any" styles={selectStyles}
                         noOptionsMessage={() => 'Select a valid option' }/>
                     </div>
+                    <div className="job-titles">
+                        <label className="form-label">Job Title</label>
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadJobTitlesOptions} onChange={handleSelectedJobTitles} placeholder="Any" styles={selectStyles} isMulti 
+                        noOptionsMessage={() => 'None'}/>
+                    </div>
+                    </div>
+                    <div className="filters-2">
                     <div className="databases">
                         <label className="form-label">Databases</label>
                         <Select options={databases} onChange={handleSelectedDatabases} placeholder="Any" styles={selectStyles} isMulti
@@ -277,11 +312,6 @@ export default function Jobs() {
                         <label className="form-label">Cloud Providers</label>
                         <Select options={cloudProviders} onChange={handleSelectedCloudProviders} placeholder="Any" styles={selectStyles} isMulti
                         noOptionsMessage={() => 'Select a valid option' }/>
-                    </div>
-                    <div className="job-titles">
-                        <label className="form-label">Job Title</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadJobTitlesOptions} onChange={handleSelectedJobTitles} placeholder="Any" styles={selectStyles} isMulti 
-                        noOptionsMessage={() => 'None'}/>
                     </div>
                 </div>
                 {data.length !== 0 ? (<div className="table-container">
