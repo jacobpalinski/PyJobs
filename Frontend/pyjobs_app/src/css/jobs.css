@@ -11,21 +11,71 @@
   }
   
   h1 {
-    font-size: 24px;
+    font-size: 30px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .filters {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+
+  .date-posted {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 10px;
   }
   
-  .location {
+  .locations {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 10px;
   }
-  .company {
-    margin-bottom : 10px;
+  
+  .companies {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .job-groups {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .databases {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .cloud-providers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .job-titles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
   }
   
   .form-label {
-    display: block;
     font-weight: bold;
     margin-bottom: 5px;
+    text-align: center;
   }
   
   .form-select {

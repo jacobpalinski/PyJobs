@@ -194,7 +194,42 @@ export default function Jobs() {
             console.error('Error retrieving job titles data', error);
             return [];
         }
-    }
+    };
+
+    const selectStyles = {
+        control: (styles, state) => ({...styles, height: "10px", width: "200px", backgroundColor: "#88abde", 
+        borderColor: '#000000',
+        boxShadow: '0 0 2px black',
+        '&:hover': {borderColor: '#000000', boxShadow: '0 0 3px black'}}),
+        placeholder: (styles) => ({...styles, fontSize: '12px', color: "#ffffff"}),
+        singleValue: (styles) => ({...styles, fontSize: '12px', color: "#ffffff"}),
+        input: (styles) => ({...styles, fontSize: '12px', color: "#ffffff"}),
+        option: (styles, state) => ({...styles,
+        backgroundColor: state.isSelected ? '#88abde' : '#ffffff',
+        fontSize: '12px',
+        '&:hover': {
+            backgroundColor: '#88abde',
+            color: '#ffffff'
+        },
+        '&:active': {
+            backgroundColor: '#88abde'
+        }}),
+        indicatorSeparator: (styles) => ({...styles, backgroundColor: "#ffffff"}),
+        dropdownIndicator: (styles, state) => ({...styles, 
+        color: state.isHovered ? "#000000" : "#ffffff",
+        '&:hover': {color: "#000000"}}),
+        menu: (styles) => ({
+            ...styles,
+            borderColor: "#000000",
+            boxShadow: '0 0 2px black',
+            borderWidth: '1px',
+            borderTop: 'none'
+        }),
+        noOptionsMessage: (styles) => ({
+            ...styles,
+            fontSize: '12px'
+        })
+    };
 
 
     //hooks calls after rendering select state
@@ -209,35 +244,44 @@ export default function Jobs() {
     return (
         <div>
             <div className="jobs-container">
-                <h1 className="jobs-header">Jobs</h1>
+                <div className="heading">
+                    <img src="/pythonlogo.png" alt="Logo"/>
+                    <h1>PyJobs</h1>
+                </div>
                 <div className="filters">
                     <div className="date-posted">
                         <label className="form-label">Date Posted</label>
-                        <Select options={daysPostedAgo} onChange={handleDatePosted}/>
+                        <Select options={daysPostedAgo} onChange={handleDatePosted} placeholder="Any" styles={selectStyles} noOptionsMessage={() => 'Select a valid option' }/>
                     </div>
                     <div className="locations">
                         <label className="form-label">Locations</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadLocationsOptions} onChange={handleLocationsChange} isMulti />
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadLocationsOptions} onChange={handleLocationsChange} placeholder="Any" styles={selectStyles} isMulti 
+                        noOptionsMessage={() => 'None'} />
                     </div>
-                    <div className="company">
+                    <div className="companies">
                         <label className="form-label">Companies</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadCompaniesOptions} onChange={handleCompaniesChange} isMulti />
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadCompaniesOptions} onChange={handleCompaniesChange} placeholder="Any" styles={selectStyles} isMulti 
+                        noOptionsMessage={() => 'None'}/>
                     </div>
-                    <div className="group">
+                    <div className="job-groups">
                         <label className="form-label">Job Group</label>
-                        <Select options={jobGroups} onChange={handleJobGroupChange}/>
+                        <Select options={jobGroups} onChange={handleJobGroupChange} placeholder="Any" styles={selectStyles}
+                        noOptionsMessage={() => 'Select a valid option' }/>
                     </div>
                     <div className="databases">
                         <label className="form-label">Databases</label>
-                        <Select options={databases} onChange={handleSelectedDatabases} isMulti/>
+                        <Select options={databases} onChange={handleSelectedDatabases} placeholder="Any" styles={selectStyles} isMulti
+                        noOptionsMessage={() => 'Select a valid option' }/>
                     </div>
                     <div className="cloud-providers">
                         <label className="form-label">Cloud Providers</label>
-                        <Select options={cloudProviders} onChange={handleSelectedCloudProviders} isMulti/>
+                        <Select options={cloudProviders} onChange={handleSelectedCloudProviders} placeholder="Any" styles={selectStyles} isMulti
+                        noOptionsMessage={() => 'Select a valid option' }/>
                     </div>
-                    <div className="jobtitle">
+                    <div className="job-titles">
                         <label className="form-label">Job Title</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadJobTitlesOptions} onChange={handleSelectedJobTitles} isMulti />
+                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadJobTitlesOptions} onChange={handleSelectedJobTitles} placeholder="Any" styles={selectStyles} isMulti 
+                        noOptionsMessage={() => 'None'}/>
                     </div>
                 </div>
                 {data.length !== 0 ? (<div className="table-container">
