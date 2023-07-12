@@ -16,7 +16,7 @@ class jobData(db.Document):
     jobTitle = db.StringField(required = True)
     group = db.StringField(choices = ['Data Science / Engineering','Management','Research','Testing','Software Engineering / Development',
     'Quantitative Finance / Trading'],required = True)
-    databases = db.ListField(db.StringField(choices = ["MySQL","PostgreSQL","SQLite","MongoDB","MS SQL","SQL Server",
+    databases = db.ListField(db.StringField(choices = ["MySQL","PostgreSQL","SQLite","MongoDB","MS SQL",
     "MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]), max_length = 11)
     cloudProviders = db.ListField(db.StringField(choices = ["AWS", "Azure", "GCP"]), max_length = 3)
     link = db.StringField(required = True)

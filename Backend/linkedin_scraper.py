@@ -154,11 +154,10 @@ class Scraper():
             for database in Scraper.databases:
                 if re.search(database, description, re.IGNORECASE):
                     databases.append(database)
-            if 'SQL Server' in databases and 'MS SQL' not in databases:
-                index = databases.index('SQL Server')
-                databases[index] = 'MS SQL'
             if 'SQL Server' in databases and 'MS SQL' in databases:
                 databases.remove('SQL Server')
+            if 'SQL Server' in databases and 'MS SQL' not in databases:
+                databases[databases.index('SQL Server')] = 'MS SQL'
         except:
             databases = None
         # Extract cloud provider
