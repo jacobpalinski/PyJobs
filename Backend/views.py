@@ -36,8 +36,6 @@ class jobDataResource(Resource):
                 query_args['jobTitle__icontains'] = request.args.get(arg)
             elif arg == 'group':
                 query_args['group__in'] = list(request.args.getlist(arg))
-            elif arg == 'language':
-                query_args['programmingLanguages__in'] = list(request.args.getlist(arg))
             elif arg == 'database':
                 query_args['databases__in'] = list(request.args.getlist(arg))
             elif arg == 'cloud':
@@ -84,7 +82,7 @@ class jobDataResource(Resource):
             # Append new job to jobData database
             try:
                 new_job = jobData(jobId = job['Job_Id'], company = job['Company'], location = job['Location'], jobTitle = job['Job Title'],
-                group = job['Group'], programmingLanguages = job['Programming Languages'], databases = job['Databases'], cloudProviders = job['Cloud Providers'],
+                group = job['Group'], databases = job['Databases'], cloudProviders = job['Cloud Providers'],
                 link = job['Link'], datePosted = job['Date Posted'])
                 print(new_job.to_mongo().to_dict())
                 new_job.validate()
@@ -114,20 +112,13 @@ class jobDataResource(Resource):
                 data.jobTitle = request.args.get('jobTitle')
             if 'group' in request.args:
                 data.group = request.args.get('group')
-            if 'language' in request.args and 'language_index' in request.args:
-                index = int(request.args.get('language_index'))
-                language = request.args.get('language')
-                if index < len(data.programmingLanguages):
-                    data.programmingLanguages[index] = language
-                elif index == len(data.programmingLanguages):
-                    data.programmingLanguages.append(language)
             if 'database' in request.args and 'database_index' in request.args:
                 index = int(request.args.get('database_index'))
                 database = request.args.get('database')
                 if index < len(data.databases):
                     data.databases[index] = database
                 elif index == len(data.databases):
-                    data.databases.append(language)
+                    data.databases.append(database)
             if 'cloud' in request.args and 'cloud_index' in request.args:
                 index = int(request.args.get('cloud_index'))
                 cloud = request.args.get('cloud')

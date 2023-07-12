@@ -39,7 +39,7 @@ class S3Bucket:
 class GenerateUrl():
     @staticmethod
     def generate_listings_url(city: str, start_num: int) -> str:
-        return f'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22%20OR%20%22Javascript%22%20OR%20%22TypeScript%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}&dynamic=false'
+        return f'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}&dynamic=false'
 
     @staticmethod
     def generate_job_details_url(job_id: str) -> str:
@@ -56,8 +56,8 @@ class HTMLRetriever():
             print("Error occurred: ", e)
 
 class Scraper():
-    # Programming languages, databases and cloud providers to search for when parsing html
-    programming_languages = ["Python","JavaScript","TypeScript"]
+    # Programming language, databases and cloud providers to search for when parsing html
+    language = "Python"
     databases = ["MySQL","PostgreSQL","SQLite","MongoDB", "MS SQL",
     "SQL Server","MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
     cloud_providers = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]
@@ -143,12 +143,10 @@ class Scraper():
         # Extract programming languages
         try:
             description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
-            programming_languages = []
-            for language in Scraper.programming_languages:
-                if re.search(language, description, re.IGNORECASE):
-                    programming_languages.append(language)
+            if re.search(Scraper.language, description, re.IGNORECASE):
+                contains_python = True
         except:
-            programming_languages = None
+            contains_python = False
         # Extract databases
         try:
             description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
@@ -184,9 +182,9 @@ class Scraper():
         # Date posted
         date_posted = datetime.date.today().strftime('%Y-%m-%d')
         # Append to list if group != none
-        if group != None:
-            self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group,
-            'Programming Languages': programming_languages, 'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
+        if contains_python == True and group != None:
+            self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group, 
+            'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
     
     def extract_to_s3(self):
         for location in Scraper.locations:
