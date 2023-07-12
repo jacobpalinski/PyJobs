@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/jobs.css';
 import Pagination from './pagination';
 import Select from "react-select";
@@ -13,6 +14,7 @@ export default function Jobs() {
     const [selectedJobTitles, setSelectedJobTitles] = useState("");
     const [selectedDatabases, setSelectedDatabases] = useState([]);
     const [selectedCloudProviders, setSelectedCloudProviders] = useState([]);
+    const navigate = useNavigate();
     const daysPostedAgo = [
         {value: "14", label: "All"},
         {value: "1", label: "< 1 day ago"},
@@ -196,6 +198,11 @@ export default function Jobs() {
         }
     };
 
+    const logout = () => {
+        localStorage.removeItem('auth_token');
+        navigate('/login');
+    }
+
     const selectStyles = {
         control: (styles, state) => ({...styles, height: state.selectProps.isMulti ? "100%" : "38px", width: "240px", backgroundColor: "#88abde", 
         borderColor: '#000000',
@@ -350,6 +357,7 @@ export default function Jobs() {
                 <Pagination pages = {howManyPages} setCurrentPage={setCurrentPage}/>
             </div>
              ) : (<p>No jobs exist for given filters</p>)}
+            <button className="logout-button" onClick={logout}>Logout</button>
         </div>
     </div>
     );

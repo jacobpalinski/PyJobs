@@ -27,7 +27,13 @@
 }
 
 .pagination-container a.disabled {
-    opacity: 0.6;
+    opacity: 0.3;
+}
+
+.pagination-container a.pagination-link:hover:not(.active).disabled {
+    opacity: 0.3;
+    background-color: #FFD700;
+    color: #000000;
 }
 
 .pagination-container a:hover:not(.active) {
