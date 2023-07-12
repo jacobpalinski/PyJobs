@@ -170,8 +170,12 @@ class Scraper():
                     cloud_providers.append(provider)
             if 'Amazon Web Services' in cloud_providers and 'AWS' in cloud_providers:
                 cloud_providers.remove('Amazon Web Services')
+            if 'Amazon Web Services' in cloud_providers and 'AWS' not in cloud_providers:
+                cloud_providers[cloud_providers.index('Amazon Web Services')] = 'AWS'
             if 'Google Cloud' in cloud_providers and 'GCP' in cloud_providers:
                 cloud_providers.remove('Google Cloud')
+            if 'Google Cloud' in cloud_providers and 'GCP' not in cloud_providers:
+                cloud_providers[cloud_providers.index('Google Cloud')] = 'GCP'
         except:
             cloud_providers = None
         # Extract link
@@ -183,7 +187,7 @@ class Scraper():
         date_posted = datetime.date.today().strftime('%Y-%m-%d')
         # Append to list if group != none
         if contains_python == True and group != None:
-            self.job_data.append({'Job_Id':id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group, 
+            self.job_data.append({'Job_Id': id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group, 
             'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
     
     def extract_to_s3(self):

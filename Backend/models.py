@@ -18,7 +18,7 @@ class jobData(db.Document):
     'Quantitative Finance / Trading'],required = True)
     databases = db.ListField(db.StringField(choices = ["MySQL","PostgreSQL","SQLite","MongoDB","MS SQL","SQL Server",
     "MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]), max_length = 11)
-    cloudProviders = db.ListField(db.StringField(choices = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]), max_length = 3)
+    cloudProviders = db.ListField(db.StringField(choices = ["AWS", "Azure", "GCP"]), max_length = 3)
     link = db.StringField(required = True)
     datePosted = db.DateTimeField(default = datetime.date.today())
 
