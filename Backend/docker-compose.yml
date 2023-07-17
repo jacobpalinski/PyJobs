@@ -9,6 +9,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       TZ: Asia/Singapore
+    volumes:
+     - mongo_data:/data/db
 
   api:
     build: .
@@ -19,3 +21,6 @@ services:
     environment:
       - MONGO_URI=${MONGO_URI}
       - TZ=Asia/Singapore
+
+volumes:
+  mongo_data: {}

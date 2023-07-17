@@ -1,11 +1,11 @@
 import requests
-from bs4 import BeautifulSoup
 import math
 import regex as re
 import datetime
 import boto3
 import json
 import os
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 # Load environment variables for S3
@@ -38,8 +38,8 @@ class S3Bucket:
 
 class GenerateUrl():
     @staticmethod
-    def generate_listings_url(city: str, start_num: int) -> str:
-        return f'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22&location={city}&f_TPR=r86400&position=1&pageNum=0&start={start_num}&dynamic=false'
+    def generate_listings_url(location: str, start_num: int) -> str:
+        return f'https://api.scrapingdog.com/scrape?api_key=6443435218d5084d7d0e6e65&url=https://linkedin.com/jobs/search?keywords=%22Python%22&location={location}&f_TPR=r86400&position=1&pageNum=0&start={start_num}&dynamic=false'
 
     @staticmethod
     def generate_job_details_url(job_id: str) -> str:
@@ -58,10 +58,10 @@ class HTMLRetriever():
 class Scraper():
     # Programming language, databases and cloud providers to search for when parsing html
     language = "Python"
-    databases = ["MySQL","PostgreSQL","SQLite","MongoDB", "MS SQL",
-    "SQL Server","MariaDB","Firebase","ElasticSearch","Oracle","DynamoDB"]
-    cloud_providers = ["Amazon Web Services", "AWS", "Azure","Google Cloud","GCP"]
-    locations = ["Helsinki"] # Other locations to be added later when AWS code works
+    databases = ["MySQL", "PostgreSQL", "SQLite", "MongoDB", "MS SQL",
+    "SQL Server", "MariaDB", "Firebase", "ElasticSearch", "Oracle", "DynamoDB"]
+    cloud_providers = ["Amazon Web Services", "AWS", "Azure", "Google Cloud", "GCP"]
+    locations = ["Australia"] # Other locations to be added later
 
     def __init__(self):
         self.bucket = S3Bucket()
@@ -71,7 +71,7 @@ class Scraper():
     def extract_job_ids(self, html: BeautifulSoup):
         # Check if there are job listings for given url
         title = html.title.text
-        match = re.search(r'\d[\d,]*\d|\d',title)
+        match = re.search(r'\d[\d,]*\d|\d', title)
         if match:
             # Extract job id for each listing
             job_divs = html.find_all('div', class_ = 'base-card relative w-full hover:no-underline focus:no-underline base-card--link base-search-card base-search-card--link job-search-card')
@@ -140,7 +140,7 @@ class Scraper():
                 group = None
         except:
             group = None
-        # Extract programming languages
+        # Check if Python is in description
         try:
             description = html.find('div', class_ = 'show-more-less-html__markup show-more-less-html__markup--clamp-after-5').get_text()
             if re.search(Scraper.language, description, re.IGNORECASE):
@@ -184,7 +184,7 @@ class Scraper():
             link = None
         # Date posted
         date_posted = datetime.date.today().strftime('%Y-%m-%d')
-        # Append to list if group != none
+        # Append to list if contains_python == True and group != none
         if contains_python == True and group != None:
             self.job_data.append({'Job_Id': id, 'Company': company, 'Location': location, 'Job Title': job_title, 'Group': group, 
             'Databases': databases, 'Cloud Providers': cloud_providers, 'Link': link, 'Date Posted': date_posted})
@@ -192,20 +192,18 @@ class Scraper():
     def extract_to_s3(self):
         for location in Scraper.locations:
             # Retrieve total number of listings from initial loading page
-            initial_url = GenerateUrl.generate_listings_url(location,0)
+            initial_url = GenerateUrl.generate_listings_url(location, 0)
             html = HTMLRetriever.get_html(initial_url)
             title = html.title.text
-            num_listings = re.search(r'\d[\d,]*\d|\d',title)
+            num_listings = re.search(r'\d[\d,]*\d|\d', title)
 
             if num_listings:
-                num_listings_str = num_listings.group().replace(",","")
-                print(num_listings_str)
-                num_loops = math.ceil(int(num_listings_str)/25)
-                print(num_loops)
+                num_listings_str = num_listings.group().replace(",", "")
+                num_loops = math.ceil(int(num_listings_str) / 25)
                 start_num = 0
                 # Extract job_id from all listings
-                for loop in range(0,1): # put num loops back in later
-                    url = GenerateUrl.generate_listings_url(location,start_num)
+                for loop in range(0, num_loops):
+                    url = GenerateUrl.generate_listings_url(location, start_num)
                     html = HTMLRetriever.get_html(url)
                     self.extract_job_ids(html)
                     start_num += 25
@@ -213,7 +211,7 @@ class Scraper():
                 for job_id in self.job_ids:
                     job_details_url = GenerateUrl.generate_job_details_url(job_id)
                     job_details_html = HTMLRetriever.get_html(job_details_url)
-                    self.extract_job_data(job_id,job_details_html)
+                    self.extract_job_data(job_id, job_details_html)
         # Put scraped data into S3 Bucket
         self.bucket.put_data(self.job_data)
 

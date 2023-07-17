@@ -1,8 +1,8 @@
+import json
 from flask import Blueprint, request, jsonify, make_response
 from flask_restful import Api, Resource
 from flask_httpauth import HTTPBasicAuth
 from mongoengine.errors import ValidationError
-import json
 from httpstatus import HttpStatus
 from models import jobData, User
 from linkedin_scraper import *
@@ -10,13 +10,13 @@ from linkedin_scraper import *
 # Load environment variables for S3
 load_dotenv()
 
-job_data_blueprint = Blueprint('job_data',__name__)
+job_data_blueprint = Blueprint('job_data', __name__)
 job_data = Api(job_data_blueprint)
 auth = HTTPBasicAuth()
 s3 = S3Bucket()
 
 @auth.verify_password
-def verify_password(username,password):
+def verify_password(username, password):
     user = User.objects(username = username).first()
     if user and user.check_password(password):
         return user
@@ -24,7 +24,7 @@ def verify_password(username,password):
 class jobDataResource(Resource):
     def get(self):
         ''' Retrieves jobs list based on request parameters specified in get request / filters on search page.
-        Must be able to retrieve jobs based on parameters that take a list as a value eg. 'Programming Languages': ['Python','TypeScript']'''
+        Must be able to retrieve jobs based on parameters that take a list as a value eg. 'Database': ['MySQL','PostgreSQl']'''
         # Extract arguments from get request
         query_args = {}
         for arg in request.args:
@@ -58,8 +58,7 @@ class jobDataResource(Resource):
 
     @auth.login_required
     def post(self):
-        ''' Uses AWS batch function to scrape data using linkedin_scraper.py script, checking for existing data in database,
-        removing duplicates from new data, and inserts new data into database'''
+        ''' Daily cron job '''
         user = auth.current_user()
         if not user.admin:
             return {'message': 'You need admin privileges to add jobs'}, HttpStatus.forbidden_403.value
@@ -140,7 +139,7 @@ class jobDataResource(Resource):
 
     @auth.login_required
     def delete(self):
-        ''' Lambda function to delete jobData when job post becomes 14 days old'''
+        ''' Daily cron job to delete job post when it becomes 14 days old'''
         user = auth.current_user()
         if not user.admin:
             return {'message': 'You need admin privileges to delete old jobs'}, HttpStatus.forbidden_403.value
@@ -157,7 +156,7 @@ class UserResource(Resource):
     def post(self):
         user_register_dict = request.get_json()
         # Check if I have already created an admin user
-        print(User.objects(admin=True))
+        print(User.objects(admin = True))
         is_admin = User.objects(admin = True).count()
         if is_admin != 1:
             try:
