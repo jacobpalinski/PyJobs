@@ -26,7 +26,6 @@ export default function Jobs() {
         {value: "SQLite", label: "SQLite"},
         {value: "MongoDB", label: "MongoDB"},
         {value: "MS SQL", label: "MS SQL"},
-        {value: "SQL Server", label: "SQL Server"},
         {value: "Maria DB", label: "Maria DB"},
         {value: "Firebase", label: "Firebase"},
         {value: "ElasticSearch", label: "ElasticSearch"},
@@ -34,14 +33,12 @@ export default function Jobs() {
         {value: "DynamoDB", label: "DynamoDB"}
     ];
     const cloudProviders = [
-        {value: "Amazon Web Services", label: "Amazon Web Services"},
         {value: "AWS", label: "AWS"},
         {value: "Azure", label: "Azure"},
-        {value: "Google Cloud", label: "Google Cloud"},
         {value: "GCP", label: "GCP"}
     ];
     const jobGroups = [
-        {value: 'All', label: 'All'},
+        {value: "All", label: "All"},
         {value: "Data Science / Engineering", label: "Data Science / Engineering" },
         {value: "Research", label: "Research"},
         {value: "Management", label: "Management"},
@@ -55,17 +52,17 @@ export default function Jobs() {
 
     const indexofLastPost = currentPage * postsPerPage;
     const indexofFirstPost = indexofLastPost - postsPerPage;
-    const currentPosts= data.slice(indexofFirstPost,indexofLastPost);
-    const howManyPages = Math.ceil(data.length/postsPerPage);
+    const currentPosts = data.slice(indexofFirstPost, indexofLastPost);
+    const howManyPages = Math.ceil(data.length / postsPerPage);
 
     console.log(data);
 
-    //custom data
+    // Fetch data
     useEffect(() => {
-        const fetchjobData = async () => {
+        const fetchJobData = async () => {
             // Base URL
-            let url = 'http://127.0.0.1:5000/job_data/jobData';
-            // Query parameters based on selected values
+            let url = "http://127.0.0.1:5000/job_data/jobData";
+            // Query parameters based on selected fields
             const queryParams = [];
 
             if (locations) {
@@ -81,7 +78,7 @@ export default function Jobs() {
             }
 
             if (jobGroup) {
-                if (jobGroup !== 'All'){
+                if (jobGroup !== "All"){
                     queryParams.push(`group=${jobGroup}`);
                 }
             }
@@ -111,23 +108,23 @@ export default function Jobs() {
             console.log(queryParams);
 
             if (queryParams.length > 0) {
-                url += `?${queryParams.join('&')}`;
+                url += `?${queryParams.join("&")}`;
             }
 
             try {
                 const response = await fetch(url, {
-                    method: 'GET',
+                    method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 })
                 const data = await response.json();
                 setData(data);
             } catch (error) {
-                console.error('Error retrieving data', error);
+                console.error("Error retrieving data", error);
             }
         };
-        fetchjobData();
+        fetchJobData();
     }, [locations, companies, jobGroup, datePosted, selectedJobTitles, selectedDatabases, selectedCloudProviders]);
 
     // select onchange function getting option selected value and save inside state variable
@@ -137,27 +134,27 @@ export default function Jobs() {
 
     function handleCompaniesChange (e) {
         setCompanies(e.map(company => company.value));
-    }
+    };
 
     function handleJobGroupChange (e) {
         setJobGroup(e.value);
-    }
+    };
 
     function handleDatePosted (e) {
         setDatePosted(e.value);
-    }
+    };
 
     function handleSelectedJobTitles (e) {
         setSelectedJobTitles(e.map(jobTitle => jobTitle.value));
-    }
+    };
 
     function handleSelectedDatabases (e) {
         setSelectedDatabases(e.map(database => database.value));
-    }
+    };
 
     function handleSelectedCloudProviders (e) {
         setSelectedCloudProviders(e.map(provider => provider.value));
-    }
+    };
 
     const loadLocationsOptions = async (searchValue, callback) => {
         try {
@@ -167,10 +164,10 @@ export default function Jobs() {
             const options = uniqueLocations.map(location => ({ value: location, label: location }));
             callback(options);
         } catch (error) {
-            console.error('Error retrieving locations data', error);
+            console.error("Error retrieving locations data", error);
             return [];
         }
-    }
+    };
 
     const loadCompaniesOptions = async (searchValue, callback) => {
         try {
@@ -180,10 +177,10 @@ export default function Jobs() {
             const options = uniqueCompanies.map(company => ({ value: company, label: company}));
             callback(options);
         } catch (error) {
-            console.error('Error retrieving companies data', error);
+            console.error("Error retrieving companies data", error);
             return [];
         }
-    }
+    };
 
     const loadJobTitlesOptions = async (searchValue, callback) => {
         try {
@@ -193,88 +190,78 @@ export default function Jobs() {
             const options = uniquejobTitles.map(jobTitle => ({ value: jobTitle, label: jobTitle}));
             callback(options);
         } catch (error) {
-            console.error('Error retrieving job titles data', error);
+            console.error("Error retrieving job titles data", error);
             return [];
         }
     };
 
     const logout = () => {
-        localStorage.removeItem('auth_token');
-        navigate('/login');
-    }
+        localStorage.removeItem("authToken");
+        navigate("/login");
+    };
 
     const selectStyles = {
         control: (styles, state) => ({...styles, height: state.selectProps.isMulti ? "100%" : "38px", width: "240px", backgroundColor: "#88abde", 
-        borderColor: '#000000',
-        boxShadow: '0 0 2px black',
-        '&:hover': {borderColor: '#000000', boxShadow: '0 0 3px black'}}),
-        placeholder: (styles) => ({...styles, fontSize: '12px', color: "#ffffff"}),
-        singleValue: (styles) => ({...styles, fontSize: '12px', color: "#ffffff"}),
-        input: (styles) => ({...styles, fontSize: '12px', color: "#ffffff"}),
+        borderColor: "#000000",
+        boxShadow: "0 0 2px black",
+        "&:hover": {borderColor: "#000000", boxShadow: "0 0 3px black"}}),
+        placeholder: (styles) => ({...styles, fontSize: "12px", color: "#ffffff"}),
+        singleValue: (styles) => ({...styles, fontSize: "12px", color: "#ffffff"}),
+        input: (styles) => ({...styles, fontSize: "12px", color: "#ffffff"}),
         option: (styles, state) => ({...styles,
-        backgroundColor: state.isSelected ? '#88abde' : '#ffffff',
-        fontSize: '12px',
-        '&:hover': {
-            backgroundColor: '#88abde',
-            color: '#ffffff'
+        backgroundColor: state.isSelected ? "#88abde" : "#ffffff",
+        fontSize: "12px",
+        "&:hover": {
+            backgroundColor: "#88abde",
+            color: "#ffffff"
         },
-        '&:active': {
-            backgroundColor: '#88abde'
+        "&:active": {
+            backgroundColor: "#88abde"
         }}),
         indicatorSeparator: (styles) => ({...styles, backgroundColor: "#ffffff"}),
         dropdownIndicator: (styles, state) => ({...styles, 
         color: state.isHovered ? "#000000" : "#ffffff",
-        '&:hover': {color: "#000000"}}),
+        "&:hover": {color: "#000000"}}),
         clearIndicator: (styles, state) => ({
             ...styles,
-            color: '#ffffff',
-            '&:hover': {
-                color: '#880808'
+            color: "#ffffff",
+            "&:hover": {
+                color: "#880808"
             }
         }),
         menu: (styles) => ({
             ...styles,
             borderColor: "#000000",
-            boxShadow: '0 0 2px black',
-            borderWidth: '1px',
-            borderTop: 'none'
+            boxShadow: "0 0 2px black",
+            borderWidth: "1px",
+            borderTop: "none"
         }),
         multiValue: (styles) => ({
             ...styles,
-            backgroundColor: '#FFD700',
-            borderRadius: '10px',
-            display: 'inline-flex',
-            '&:hover': {
-                borderRadius: '10px'
+            backgroundColor: "#FFD700",
+            borderRadius: "10px",
+            display: "inline-flex",
+            "&:hover": {
+                borderRadius: "10px"
             }
         }),
         multiValueLabel: (styles) => ({
             ...styles,
-            fontSize: '12px',
-            fontColor: '#000000'
+            fontSize: "12px",
+            fontColor: "#000000"
         }),
         multiValueRemove: (styles, state) => ({
             ...styles,
-            '&:hover': {
-                backgroundColor: '#000000',
-                color: '#880808'
+            "&:hover": {
+                backgroundColor: "#000000",
+                color: "#880808"
             }
         }),
         noOptionsMessage: (styles) => ({
             ...styles,
-            fontSize: '12px'
+            fontSize: "12px"
         })
     };
-
-
-    //hooks calls after rendering select state
-    /*useEffect(() => {
-        // Doing filtration based on location
-        const jobData = initialData.filter(jobData => jobData.location === location 
-            && jobData.company === company 
-            && jobData.group === group);
-        setData(jobData);
-    }, [location, company, group, datePosted])*/
 
     return (
         <div>
@@ -285,80 +272,117 @@ export default function Jobs() {
                 </div>
                 <div className="filters">
                     <div className="date-posted">
-                        <label className="form-label">Date Posted</label>
-                        <Select options={daysPostedAgo} onChange={handleDatePosted} placeholder="Any" styles={selectStyles} noOptionsMessage={() => 'Select a valid option' }/>
+                        <label className="form-label"> Date Posted</label>
+                        <Select 
+                        options={daysPostedAgo} 
+                        onChange={handleDatePosted} 
+                        placeholder="Any" styles={selectStyles} 
+                        noOptionsMessage={() => "Select a valid option" }/>
                     </div>
                     <div className="locations">
                         <label className="form-label">Locations</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadLocationsOptions} onChange={handleLocationsChange} placeholder="Any" styles={selectStyles} isMulti 
-                        noOptionsMessage={() => 'None'} />
+                        <AsyncSelect 
+                        defaultOptions 
+                        cacheOptions 
+                        loadOptions={loadLocationsOptions} 
+                        onChange={handleLocationsChange} 
+                        placeholder="Any" 
+                        styles={selectStyles} 
+                        isMulti 
+                        noOptionsMessage={() => "None"} />
                     </div>
                     <div className="companies">
                         <label className="form-label">Companies</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadCompaniesOptions} onChange={handleCompaniesChange} placeholder="Any" styles={selectStyles} isMulti 
-                        noOptionsMessage={() => 'None'}/>
+                        <AsyncSelect 
+                        defaultOptions 
+                        cacheOptions 
+                        loadOptions={loadCompaniesOptions} 
+                        onChange={handleCompaniesChange} 
+                        placeholder="Any" styles={selectStyles} 
+                        isMulti 
+                        noOptionsMessage={() => "None"}/>
                     </div>
                     <div className="job-groups">
                         <label className="form-label">Job Group</label>
-                        <Select options={jobGroups} onChange={handleJobGroupChange} placeholder="Any" styles={selectStyles}
-                        noOptionsMessage={() => 'Select a valid option' }/>
+                        <Select 
+                        options={jobGroups} 
+                        onChange={handleJobGroupChange} 
+                        placeholder="Any" styles={selectStyles}
+                        noOptionsMessage={() => "Select a valid option" }/>
                     </div>
                     <div className="job-titles">
                         <label className="form-label">Job Title</label>
-                        <AsyncSelect defaultOptions cacheOptions loadOptions={loadJobTitlesOptions} onChange={handleSelectedJobTitles} placeholder="Any" styles={selectStyles} isMulti 
-                        noOptionsMessage={() => 'None'}/>
+                        <AsyncSelect 
+                        defaultOptions 
+                        cacheOptions 
+                        loadOptions={loadJobTitlesOptions} 
+                        onChange={handleSelectedJobTitles} 
+                        placeholder="Any" 
+                        styles={selectStyles} 
+                        isMulti 
+                        noOptionsMessage={() => "None"}/>
                     </div>
                     </div>
                     <div className="filters-2">
-                    <div className="databases">
-                        <label className="form-label">Databases</label>
-                        <Select options={databases} onChange={handleSelectedDatabases} placeholder="Any" styles={selectStyles} isMulti
-                        noOptionsMessage={() => 'Select a valid option' }/>
+                        <div className="databases">
+                            <label className="form-label">Databases</label>
+                            <Select 
+                            options={databases} 
+                            onChange={handleSelectedDatabases} 
+                            placeholder="Any" 
+                            styles={selectStyles} 
+                            isMulti
+                            noOptionsMessage={() => "Select a valid option" }/>
+                        </div>
+                        <div className="cloud-providers">
+                            <label className="form-label">Cloud Providers</label>
+                            <Select 
+                            options={cloudProviders} 
+                            onChange={handleSelectedCloudProviders} 
+                            placeholder="Any" 
+                            styles={selectStyles} 
+                            isMulti
+                            noOptionsMessage={() => "Select a valid option" }/>
+                        </div>
                     </div>
-                    <div className="cloud-providers">
-                        <label className="form-label">Cloud Providers</label>
-                        <Select options={cloudProviders} onChange={handleSelectedCloudProviders} placeholder="Any" styles={selectStyles} isMulti
-                        noOptionsMessage={() => 'Select a valid option' }/>
-                    </div>
-                </div>
-                {data.length !== 0 ? (<div className="table-container rounded-table-container">
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Date Posted</th>
-                            <th scope="col">Location</th>
-                            <th scope="col">Company</th>
-                            <th scope="col">Group</th>
-                            <th scope="col">Job Title</th>
-                            <th scope="col">Databases</th>
-                            <th scope="col">Cloud Providers</th>
-                            <th scope="col">Link</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { // calling the state variable to filter data inside table
-                        currentPosts.map(function({datePosted,location,company,group,jobTitle,databases,cloudProviders,link})
-                        {
-                            return (
-                                <tr>
-                                    <td>{datePosted}</td>
-                                    <td>{location}</td>
-                                    <td>{company}</td>
-                                    <td>{group}</td>
-                                    <td>{jobTitle}</td>
-                                    <td>{databases.join(', ')}</td>
-                                    <td>{cloudProviders.join(', ')}</td>
-                                    <td><a href={link}>{link}</a></td>
-                                </tr>
+                    {data.length !== 0 ? (<div className="table-container rounded-table-container">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date Posted</th>
+                                <th scope="col">Location</th>
+                                <th scope="col">Company</th>
+                                <th scope="col">Group</th>
+                                <th scope="col">Job Title</th>
+                                <th scope="col">Databases</th>
+                                <th scope="col">Cloud Providers</th>
+                                <th scope="col">Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { // calling the state variable to filter data inside table
+                            currentPosts.map(function({datePosted,location,company,group,jobTitle,databases,cloudProviders,link})
+                            {
+                                return (
+                                    <tr>
+                                        <td>{datePosted}</td>
+                                        <td>{location}</td>
+                                        <td>{company}</td>
+                                        <td>{group}</td>
+                                        <td>{jobTitle}</td>
+                                        <td>{databases.join(", ")}</td>
+                                        <td>{cloudProviders.join(", ")}</td>
+                                        <td><a href={link}>{link}</a></td>
+                                    </tr>
                             );
-                        })}
-                    </tbody>
-                </table>
-                <Pagination pages = {howManyPages} setCurrentPage={setCurrentPage}/>
+                            })}
+                        </tbody>
+                    </table>
+                    <Pagination pages = {howManyPages} setCurrentPage={setCurrentPage}/>
+                </div>
+                ) : (<p>No jobs exist for given filters</p>)}
+                <button className="logout-button" onClick={logout}>Logout</button>
             </div>
-             ) : (<p>No jobs exist for given filters</p>)}
-            <button className="logout-button" onClick={logout}>Logout</button>
         </div>
-    </div>
     );
 }
