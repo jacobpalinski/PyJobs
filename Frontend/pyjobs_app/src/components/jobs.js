@@ -61,7 +61,7 @@ export default function Jobs() {
     useEffect(() => {
         const fetchJobData = async () => {
             // Base URL
-            let url = "http://127.0.0.1:5000/job_data/jobData";
+            let url = "http://127.0.0.1:5000/v1/jobData";
             // Query parameters based on selected fields
             const queryParams = [];
 
@@ -158,7 +158,7 @@ export default function Jobs() {
 
     const loadLocationsOptions = async (searchValue, callback) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?location=${searchValue}`);
+            const response = await fetch(`http://127.0.0.1:5000/v1/jobData?location=${searchValue}`);
             const data = await response.json();
             const uniqueLocations = Array.from(new Set(data.map(job => job.location)));
             const options = uniqueLocations.map(location => ({ value: location, label: location }));
@@ -171,7 +171,7 @@ export default function Jobs() {
 
     const loadCompaniesOptions = async (searchValue, callback) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?company=${searchValue}`);
+            const response = await fetch(`http://127.0.0.1:5000/v1/jobData?company=${searchValue}`);
             const data = await response.json();
             const uniqueCompanies = Array.from(new Set(data.map(job => job.company)));
             const options = uniqueCompanies.map(company => ({ value: company, label: company}));
@@ -184,7 +184,7 @@ export default function Jobs() {
 
     const loadJobTitlesOptions = async (searchValue, callback) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/job_data/jobData?jobTitle=${searchValue}`);
+            const response = await fetch(`http://127.0.0.1:5000/v1/jobData?jobTitle=${searchValue}`);
             const data = await response.json();
             const uniquejobTitles = Array.from(new Set(data.map(job => job.jobTitle)));
             const options = uniquejobTitles.map(jobTitle => ({ value: jobTitle, label: jobTitle}));

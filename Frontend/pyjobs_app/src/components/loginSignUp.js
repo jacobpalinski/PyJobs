@@ -46,7 +46,7 @@ export default function LoginSignUp() {
 			console.log(signInFormValues);
 			const fetchLogin = async () => {
 				try {
-					const response = await fetch("http://127.0.0.1:5000/job_data/user/login",{
+					const response = await fetch("http://127.0.0.1:5000/v1/user/login",{
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
@@ -81,7 +81,7 @@ export default function LoginSignUp() {
 			console.log(signUpFormValues);
 			const fetchSignUp = async () => {
 				try {
-					const response = await fetch("http://127.0.0.1:5000/job_data/user",{
+					const response = await fetch("http://127.0.0.1:5000/v1/user",{
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
